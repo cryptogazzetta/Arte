@@ -12,7 +12,7 @@ artists_mean_price_per_inch = pd.read_csv('../analysis/models/saatchi_artists_me
 def get_df_for_model(characteristics):
 
     if characteristics['Artist'] != None:
-        artist_name = characteristics['artist']
+        artist_name = characteristics['Artist']
         artist_mean_price_per_inch = artists_mean_price_per_inch['MeanPricePerInch'][artists_mean_price_per_inch['Artist'] == artist_name]
 
     
