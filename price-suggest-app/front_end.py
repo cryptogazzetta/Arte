@@ -2,9 +2,16 @@ import streamlit as st
 # project modules
 import back_end
 
-st.title('Precificação de obras de arte')
+st.title('Precificação de Pinturas')
 
-st.write("Selecione as características da obra de arte:")
+st.write("Selecione as características da pintura:")
+
+artists_mean_price_per_inch = back_end.artists_mean_price_per_inch
+
+artists_list = artists_mean_price_per_inch['Artist'].tolist()
+
+# select artist from artists_list (can be blank)
+artist = st.selectbox('Artista', artists_list)
 
 width = st.slider('Largura (cm)', 1, 1000, 40)
 height = st.slider('Altura (cm)', 1, 1000, 40)
@@ -28,9 +35,9 @@ subjects = st.multiselect('Temas', ['Abstract', 'Women', 'Animal', 'Floral',
                           'Landscape', 'People', 'Nude', 'Portrait', 'Still Life', 'Cities',
                           'Nature', 'Geometric', 'Architecture', 'Seascape', 'Men'])
 
-characteristics = {'Size': size, 'Style': styles,
-                  'Medium': mediums, 'Material': materials,
-                  'Subject': subjects}
+characteristics = {'Artist': artist, 'Size': size,
+                   'Style': styles, 'Medium': mediums,
+                   'Material': materials, 'Subject': subjects}
 
 
 # botão sugerir preço
@@ -38,4 +45,6 @@ if st.button('Sugerir preço'):
     price_prediction = back_end.get_price_prediction(characteristics)
     # converter US$ para BRL
     price_prediction = price_prediction * 5
-    st.write(f'Preço sugerido: R$ {price_prediction:.2f}')
+    # st.write(f'Preço sugerido: R$ {price_prediction:.2f}')
+    # escrever o preço sugerido com letra maior
+    st.write(f'Preço sugerido: <span style="font-size: 2em;">R$ {price_prediction:.2f}</span>', unsafe_allow_html=True)
