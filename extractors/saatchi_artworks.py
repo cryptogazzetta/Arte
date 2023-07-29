@@ -7,7 +7,7 @@ import csv
 import os
 # Project modules
 import infra.gcp as gcp
-import utils.string_handle as string_handle
+import extractors.string_handle as string_handle
 import utils.csv_handle as csv_handle
 
 categories = ['Paintings', 'Photography', 'Drawings',

@@ -6,7 +6,7 @@ from lxml import etree
 import json
 # Project modules
 from infra import gcp
-import utils.string_handle as string_handle
+import extractors.string_handle as string_handle
 
 user_agent = {'User-agent': 'Mozilla/5.0'}
 

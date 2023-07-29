@@ -4,8 +4,9 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import json
 import logging
+from extractors import string_handle
 # Project modules
-from utils import string_handle, csv_handle
+from utils import csv_handle
 from infra import gcp
 
 def get_artist_info(url, driver):

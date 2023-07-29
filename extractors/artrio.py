@@ -9,7 +9,7 @@ import requests
 from lxml import etree
 import json
 # Project modules
-from utils import string_handle
+from extractors import string_handle
 from infra import gcp
 
 

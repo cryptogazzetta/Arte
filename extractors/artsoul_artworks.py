@@ -8,9 +8,10 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import json
 import csv
+from extractors import string_handle
 # Project modules
 from infra import gcp
-from utils import string_handle, csv_handle
+from utils import csv_handle
 
 
 
