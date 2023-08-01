@@ -5,7 +5,7 @@ import json
 import csv
 # Project Modules
 from infra import gcp
-from extractors import string_handle
+from utils import string_handle
 
 
 
@@ -83,7 +83,7 @@ def get_all_artworks_info(bucket_name, gcp_links_file, output_file, failed_urls_
     artworks_info = []
     failed_urls = []
     driver = webdriver.Chrome()
-    for link in links[20:]:
+    for link in links:
         try:
             driver.get(link)
             artworks_info.append(get_artwork_info(driver))
@@ -92,7 +92,7 @@ def get_all_artworks_info(bucket_name, gcp_links_file, output_file, failed_urls_
     driver.quit()
     
     # save artworks_info as csv file
-    dict_list_to_csv(artworks_info, './temporary-files/' + output_file)
+    string_handle.dict_list_to_csv(artworks_info, './temporary-files/' + output_file)
     gcp.store_file_in_gcs(bucket_name, './temporary-files/' + output_file, output_file)
     
     # save failed_urls as json file
@@ -105,30 +105,20 @@ def get_all_artworks_info(bucket_name, gcp_links_file, output_file, failed_urls_
 def safe_extract(driver, xpath, index=None):
     if index is not None:
         try:
-            return string_handle.remove_unicode(driver.find_elements(By.XPATH, xpath)[index].text)
+            return string_handle.remove_unicode(driver.find_elements(By.XPATH, xpath)[index].text).replace('\n', ' ')
         except:
             return None
     else:
         try:
-            return string_handle.remove_unicode(driver.find_element(By.XPATH, xpath).text)
+            return string_handle.remove_unicode(driver.find_element(By.XPATH, xpath).text).replace('\n', ' ')
         except:
             return None
         
 def safe_extract_attribute(driver, xpath, attribute):
     try:
-        return driver.find_element(By.XPATH, xpath).get_attribute(attribute)
+        return driver.find_element(By.XPATH, xpath).get_attribute(attribute).replace('\n', ' ')
     except:
         return None
         
 
-def dict_list_to_csv(dict_list, info_local_file_path):
-    print(dict_list)
-    # Define the desired order of columns
-    fieldnames = dict_list[0].keys()
 
-    # Write the data in a new csv file
-    with open(info_local_file_path, 'w', newline='', encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for data in dict_list:
-            writer.writerow(data)

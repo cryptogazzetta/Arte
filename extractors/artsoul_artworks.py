@@ -8,11 +8,9 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import json
 import csv
-from extractors import string_handle
 # Project modules
 from infra import gcp
-from utils import csv_handle
-
+from utils import csv_handle, string_handle
 
 
 def get_all_artworks_links():
@@ -84,6 +82,16 @@ def get_artwork_info(url):
     location_and_year = soup.find('div', 'flex mt-3 text-sm text-gray-400 lg:mt-0')
     artwork_info['Location'] = safe_extract_multiple_info(location_and_year, 'p', 0)
     artwork_info['Year'] = safe_extract_multiple_info(location_and_year, 'p', 1)
+
+    try:
+        gallery = soup.find_all('h3', class_='text-3xl font-semibold text-gray-500 whitespace-pre-line lg:text-4xl')
+        #from list, get element that contains 'Mais Obras da Galeria'
+        gallery = [g for g in gallery if 'Mais Obras da Galeria' in g.text][0].text
+        gallery = gallery.split('Mais Obras da Galeria ')[1].strip()
+    except:
+        gallery = None
+    artwork_info['Gallery'] = gallery
+
     
     technical_data_sheet_div = soup.find('div', 'flex flex-col space-y-1 text-sm text-gray-400 normal-case')
 
@@ -164,7 +172,7 @@ def dict_list_to_csv(dict_list, info_local_file_path):
     fieldnames = [
         'url', 'Price', 'Artist', 'Artist_url', 'Title', 'Description',
         'Height', 'Width', 'Depth', 'Location', 'Year', 'Techniques',
-        'Topics', 'Colours'
+        'Topics', 'Colours', 'Gallery'
     ]
 
     with open(info_local_file_path, "w", newline="", encoding="utf-8") as file:
