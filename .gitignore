@@ -9,13 +9,13 @@ __pycache__/
 # folders
 art_app_venv
 models
+temporary-files
 
 # Models
 *.pkl
 
 # Data files
 *.csv
-*.txt
 *.json
 
 # Logs
