@@ -38,14 +38,12 @@ def get_all_artworks_links():
 
 
 
-def get_artwork_info(url):
+def get_artwork_info(driver, url):
 
-    driver = webdriver.Chrome()
     driver.get(url)
 
     artwork_info = {}
-
-    artwork_info['URL'] = url
+    artwork_info['URL'] = url.replace('\n', ' ')
     artwork_info['Price'] = safe_extract(driver, '//span[@class="woocommerce-Price-amount amount"]/bdi')
     artwork_info['Title'] = safe_extract(driver, '//h1[@class="product_title entry-title"]').split(' (')[0]
     
@@ -57,17 +55,19 @@ def get_artwork_info(url):
 
 
 def get_all_artworks_info():
-    links = gcp.retrieve_file_from_gcs('art_data_files', 'galeria22_artworks_links.txt', './temporary-files/galeria22_artworks_links.txt').split('\n')
-    links = [link for link in links if link != '']
+    links = gcp.retrieve_file_from_gcs('art_data_files', 'galeria22_artworks_links.txt', './temporary-files/galeria22_artworks_links.txt')
+    with open('./temporary-files/galeria22_artworks_links.txt', 'r') as f:
+        links = f.readlines()
     
     artworks_info = []
     failed_links = []
-
-    batch_size = 3
+    batch_size = 100
     
-    for link in links[:10]:
+    driver = webdriver.Chrome()
+
+    for link in links:
         try:
-            artworks_info.append(get_artwork_info(link))
+            artworks_info.append(get_artwork_info(driver, link))
             if len(artworks_info) % batch_size == 0:
                 store_files('galeria22_artworks_info.csv', artworks_info, failed_links)
         except:
