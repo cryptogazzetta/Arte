@@ -23,3 +23,10 @@ def file_exists(bucket_name, file_name):
     blob = bucket.blob(file_name)
     return blob.exists()
 
+def download_all_files(bucket_name, local_folder_path):
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        blob.download_to_filename(local_folder_path + blob.name)
+        print(f"File downloaded from GCS: {local_folder_path + blob.name}")

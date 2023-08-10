@@ -15,7 +15,7 @@ from utils import csv_handle, string_handle
 
 def get_all_artworks_links():
 
-    url = 'https://en.artsoul.com.br/obras'
+    url = 'https://artsoul.com.br/obras'
     driver = webdriver.Chrome()
     driver.get(url)
 
@@ -119,6 +119,9 @@ def get_all_artworks_info():
     artworks_links = gcp.retrieve_file_from_gcs('art_data_files', 'artsoul_artworks_links.txt', './temporary-files/artsoul_artworks_links.txt')
     with open('./temporary-files/artsoul_artworks_links.txt', "r", encoding="utf-8") as file:
         artworks_links = [line.strip() for line in file]
+
+    ## tirar "en." depois de "https://"
+    # artworks_links = [link.replace('en.', '') for link in artworks_links]
 
     artworks_info = []
     failed_artworks_urls = []
