@@ -1,7 +1,7 @@
-# from extractors import laart, blombo, galeria22, nano, artsoul_artworks, sparte
-from infra import gcp
+from extractors import artsy_artworks
 
-# ai_data_clean.clean_materials_data()
+# print(artsy_artworks.get_artwork_info('https://www.artsy.net/artwork/adrian-kay-wong-on-a-cold-day'))
 
-# download all files from gcp to temporary-files folder
-gcp.download_all_files('art_data_files', 'temporary-files/')
+artsy_artworks.get_all_artworks_info()
+
+# artsy_artworks.get_all_artworks_links()

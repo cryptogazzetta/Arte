@@ -11,6 +11,8 @@ art_app_venv
 models
 temporary-files
 venv
+data-files
+charts
 
 # Models
 *.pkl
