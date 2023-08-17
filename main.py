@@ -1,7 +1,5 @@
-from extractors import artsy_artworks
+from extractors import artsy_artworks, nano
+from infra import gcp
 
-# print(artsy_artworks.get_artwork_info('https://www.artsy.net/artwork/adrian-kay-wong-on-a-cold-day'))
-
-artsy_artworks.get_all_artworks_info()
-
-# artsy_artworks.get_all_artworks_links()
+url = 'https://www.artsy.net/artwork/adrian-kay-wong-blue-hour-whats-left-is-for-tomorrow'
+artsy_artworks.get_artwork_info(url)
