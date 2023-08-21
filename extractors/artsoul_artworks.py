@@ -69,15 +69,18 @@ def get_artwork_info(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     
+    ## CONSERTAR ARTIST_URL, IMAGE_URL
+
     artwork_info = {}
-    artwork_info['url'] = url
+    artwork_info['URL'] = url
 
     price = safe_extract_info(soup, 'h2', 'text-3xl text-gray-500')
     if price != None:
         artwork_info['Price'] = string_handle.get_number(price)[:-2]
     artwork_info['Artist'] = safe_extract_info(soup, 'span',  'text-sm font-semibold text-gray-500 transition group-hover:text-cyan-500').replace('\n', '')
-    artwork_info['Artist_url'] = safe_extract_info(soup, 'a', 'flex items-center h-8 px-5 text-xs font-semibold text-gray-400 uppercase transition border border-gray-300 rounded-me hover:border-cyan-400 hover:bg-cyan-400 hover:text-white', 'href')
+    artwork_info['Artist_url'] = safe_extract_info(soup, 'a', 'flex items-center space-x-4 group', 'href')
     artwork_info['Title'] = safe_extract_info(soup, 'h1', 'mt-3 mb-5 text-xl font-bold text-gray-500 lg:text-3xl')
+    artwork_info['Image_URL']  = safe_extract_info(soup, 'a', 'image-slide fade', 'href')
     artwork_info['Description'] = safe_extract_info(soup, 'div', 'prose !text-sm !normal-case !text-gray-400')
     location_and_year = soup.find('div', 'flex mt-3 text-sm text-gray-400 lg:mt-0')
     artwork_info['Location'] = safe_extract_multiple_info(location_and_year, 'p', 0)
@@ -121,7 +124,7 @@ def get_all_artworks_info():
         artworks_links = [line.strip() for line in file]
 
     ## tirar "en." depois de "https://"
-    # artworks_links = [link.replace('en.', '') for link in artworks_links]
+    artworks_links = [link.replace('en.', '') for link in artworks_links]
 
     artworks_info = []
     failed_artworks_urls = []
@@ -173,9 +176,9 @@ def safe_extract_multiple_info(soup, tag, index, selector=None):
 def dict_list_to_csv(dict_list, info_local_file_path):
     # Define the desired order of columns
     fieldnames = [
-        'url', 'Price', 'Artist', 'Artist_url', 'Title', 'Description',
-        'Height', 'Width', 'Depth', 'Location', 'Year', 'Techniques',
-        'Topics', 'Colours', 'Gallery'
+        'URL', 'Price', 'Artist', 'Artist_url', 'Title', 'Description',
+        'Height', 'Width', 'Depth', 'Location', 'Year', 'Técnicas',
+        'Temas', 'Cores', 'Gallery', 'Image_URL'
     ]
 
     with open(info_local_file_path, "w", newline="", encoding="utf-8") as file:
