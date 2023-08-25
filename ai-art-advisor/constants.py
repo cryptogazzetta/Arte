@@ -1,6 +1,6 @@
 ## CONSTANTS
-INFO_JSON = [
-        {"info_name": "greeting", "question": "user_greeting"},
+INFO_JSON_LIST = [
+        {"info_name": "greeting", "question": "Hi! I'm here to help you find the art you love. Let's get started?"},
         {"info_name": "name", "question": "To start with, how should I address you?"},
         {"info_name": "goals", "question": "Nice to meet you! And what brings you here?"},
         {"info_name": "topics", "question": "What kind of art are you interested in?"},

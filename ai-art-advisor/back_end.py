@@ -31,14 +31,8 @@ def retrieve_artworks_info(user):
 
 def get_test_items(dataframe):
     # Convert artworks to format of test_items
-    dataframe = dataframe[["Artist", "Title", "Price"]][:3]
-    dataframe.columns = ["title", "text", "price"]
-    img = [
-        "https://imgs.search.brave.com/mD1BWXbTHfRJnFxXNvwJFOYSrtv5tXJ2d7RHGuEl5WI/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9sb2Jv/cG9wYXJ0LmNvbS5i/ci93cC1jb250ZW50/L3VwbG9hZHMvMjAy/MC8wNy9QaW50dXJh/LUJhcnJvY28uanBn",
-        "https://imgs.search.brave.com/1xGKqWV1femfu2PvNmv010EN1wzlW6VIZjhVGuOO0Ik/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y3VsdHVyYWdlbmlh/bC5jb20vaW1hZ2Vu/cy9nZW9yZ2luYS1h/bGJ1cXVlcnF1ZS1p/bXByZXNzaW9uaXNt/by0wLWNrZS5qcGc",
-        "https://imgs.search.brave.com/ucsRKgCqq7tDrp6UqvWfytOa7U3tAXY_hiYOYBpzlLE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y3VsdHVyYWdlbmlh/bC5jb20vaW1hZ2Vu/cy9hcnRlLW1lZGll/dmFsLTU0bi5qcGc"
-            ]
-    dataframe["img"] = img
+    dataframe = dataframe[["Artist", "Title", "Price", "Image_URL"]][2:5]
+    dataframe.columns = ["title", "text", "price", "img"]
     dataframe["interval"] = None
     
     items = []

@@ -8,61 +8,51 @@ import front_end
 st.title("Your AI Art Advisor")
 
 
+## INITIALIZE SESSION STATE
 if "messages" not in st.session_state:
+    print('starting...')
     front_end.start_chat()
+    st.session_state.iteration_count = 0
+    
+    front_end.assistant_message(constants.INFO_JSON_LIST[0])
 
-## DISPLAYING CHAT HISTORY
+print('iteration', st.session_state.iteration_count)
+print('info_index', st.session_state.info_index)
+print('message count', len(st.session_state.messages))
+
+
+## DISPLAY CHAT HISTORY
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-## CHAT FLOWING
 
-input_placeholder = st.empty()
+## CHAT FLOW
+if user_input := st.chat_input("Type here ..."):
 
-if st.session_state.chat_active:
+    info_json = constants.INFO_JSON_LIST[st.session_state.info_index]
 
-    info_name = constants.INFO_JSON[st.session_state.info_index]["info_name"]
+    if info_json['info_name'] == "budget":
+        user_input = float(user_input)
+    if info_json['info_name'] == "topics":
+        user_input = "['Moderno', 'Contemporâneo']"
+    
+    front_end.user_message(info_json['info_name'], user_input)
 
-    st.info(f"info_name: {info_name}")
-    st.info(f"info_index: {st.session_state.info_index}")
+    info_json['info'] = user_input
 
-    ## MULTISELECT QUESTIONS
-    if info_name == "goals":
-        # hide chat_input
-        input_placeholder.empty()
-        if user_input := st.multiselect("", constants.GOALS_OPTIONS):
-            user_input = str(user_input)
-            user_info_ = {"info_name": info_name, "content": user_input}
-            st.session_state.user.change_attribute(info_name, user_input)
-            user_message = {"role": "user", "content": user_input, "info_name": info_name}
-            st.session_state.messages.append(user_message)
+    print('info_name', info_json['info_name'])
+    print('info', info_json['info'])
+    
+    
+    st.session_state.info_index += 1
+    info_json = constants.INFO_JSON_LIST[st.session_state.info_index]
+    front_end.assistant_message(info_json)
+        
 
-            front_end.user_message(info_name, user_input)
-            st.info(f"info: {user_input}")
-            
-            st.session_state.info_index += 1
-            question = constants.INFO_JSON[st.session_state.info_index]["question"]
-            front_end.assistant_message(question, info_name)
-
-    ## TEXT QUESTIONS
-    else:
-        if user_input := input_placeholder.chat_input("Type here ..."):
-            if info_name == "greeting":
-                pass
-            if info_name == "budget":
-                user_input = float(user_input)
-            if info_name == "topics":
-                user_input = "['Moderno', 'Contemporâneo']"
-            
-            front_end.user_message(info_name, user_input)
-            st.info(f"info: {user_input}")
-            
-            st.session_state.info_index += 1
-            question = constants.INFO_JSON[st.session_state.info_index]["question"]
-            front_end.assistant_message(question, info_name)
+    st.session_state.iteration_count += 1
 
 
 ## WHEN FINISHED
-if st.session_state.info_index >= len(constants.INFO_JSON)-1:
+if st.session_state.info_index >= len(constants.INFO_JSON_LIST) - 1:
     front_end.finish_chat()
