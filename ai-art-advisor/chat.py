@@ -5,20 +5,27 @@ import time
 import constants
 import front_end
 
-st.title("Your AI Art Advisor")
+# change font
+st.markdown(
+    """
+    <style>
+    title {
+        font-family: 'Playfair Display';
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.title("Mart")
 
 
 ## INITIALIZE SESSION STATE
 if "messages" not in st.session_state:
     print('starting...')
-    front_end.start_chat()
     st.session_state.iteration_count = 0
-    
-    front_end.assistant_message(constants.INFO_JSON_LIST[0])
-
-print('iteration', st.session_state.iteration_count)
-print('info_index', st.session_state.info_index)
-print('message count', len(st.session_state.messages))
+    front_end.start_chat()
+    st.session_state.messages.append({"role": "assistant", "content": "Oi! Estou aqui para te ajudar a 'navegar' o mercado de arte. Vamos começar?", "info_name": "greeting"})
 
 
 ## DISPLAY CHAT HISTORY
@@ -28,30 +35,16 @@ for message in st.session_state.messages:
 
 
 ## CHAT FLOW
-if user_input := st.chat_input("Type here ..."):
-
+user_input = st.session_state.chat_input_container.chat_input("Type here ...")
+if user_input:
     info_json = constants.INFO_JSON_LIST[st.session_state.info_index]
-
-    if info_json['info_name'] == "budget":
-        user_input = float(user_input)
-    if info_json['info_name'] == "topics":
-        user_input = "['Moderno', 'Contemporâneo']"
-    
-    front_end.user_message(info_json['info_name'], user_input)
-
+    # Handle user input
     info_json['info'] = user_input
-
-    print('info_name', info_json['info_name'])
-    print('info', info_json['info'])
-    
-    
+    front_end.user_message(info_json['info_name'], user_input)
+    # Advance to next info_json, display assistant message
     st.session_state.info_index += 1
     info_json = constants.INFO_JSON_LIST[st.session_state.info_index]
     front_end.assistant_message(info_json)
-        
-
-    st.session_state.iteration_count += 1
-
 
 ## WHEN FINISHED
 if st.session_state.info_index >= len(constants.INFO_JSON_LIST) - 1:

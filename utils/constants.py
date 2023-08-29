@@ -10,3 +10,12 @@ EMAIL = "christian@fynt.io"
 SOTHEBYS_PASSWORD = "t#3u!%h9Up!JSZb"
 
 OPENAI_API_KEY = "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"
+
+MATERIALS_OPTIONS = [
+    "Acrílico", "Aquarela", "Carvão", "Cerâmica",
+    "Colagem", "Couro", "Desenho", "Escultura",
+    "Fotografia", "Gesso", "Óleo", "Papel",
+    "Pastel", "Pedra", "Pintura", "Tela",
+    "Aquarela", "Nanquim", "Tinta", "Vidro",
+    "Impressão", "Impressão fotográfica"
+    ]

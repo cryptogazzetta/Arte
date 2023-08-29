@@ -1,0 +1,25 @@
+# External Modules
+import spacy
+import re
+# Project Modules
+import constants
+
+# Load spaCy's English language model
+nlp = spacy.load("pt_core_news_lg")
+
+# Define lists of possible goals and interests
+materials_list = constants.MATERIALS_OPTIONS
+
+# Define a function to extract structured information from user_json
+def extract_structured_info(artwork_description):
+    structured_info = []
+
+    # Use spaCy to process the art description text
+    doc = nlp(artwork_description)
+
+    for token in doc:
+        if any(material.lower() in token.text.lower() for material in materials_list):
+            structured_info.append(token.text.capitalize())
+
+    print(structured_info)
+    return structured_info
