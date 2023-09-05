@@ -17,7 +17,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("Mart")
+st.title("Marte Art Advisory")
 
 
 ## INITIALIZE SESSION STATE
@@ -25,7 +25,7 @@ if "messages" not in st.session_state:
     print('starting...')
     st.session_state.iteration_count = 0
     front_end.start_chat()
-    st.session_state.messages.append({"role": "assistant", "content": "Oi! Estou aqui para te ajudar a 'navegar' o mercado de arte. Vamos começar?", "info_name": "greeting"})
+    st.session_state.messages.append({"role": "assistant", "content": "Oi! Estou aqui para te ajudar a encontrar o que você ama no mercado de arte. Vamos começar?", "info_name": "greeting"})
 
 
 ## DISPLAY CHAT HISTORY

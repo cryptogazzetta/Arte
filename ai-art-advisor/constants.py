@@ -9,7 +9,8 @@ GOALS_OPTIONS = ["colecionar", "explorar",
 columns_to_drop = ['Size', 'Price', 'Artist', 'Title', 'Image_Url', 'Marketplace']
 df = pd.read_csv('artsoul_dummies.csv').drop(columns=columns_to_drop)
 interests_list = df.columns.tolist()
-INTERESTS_OPTIONS = interests_list
+print(interests_list)
+# INTERESTS_OPTIONS = interests_list
 
 INFO_JSON_LIST = [
         {"info_name": "greeting", "question": "Oi! Estou aqui para te ajudar a encontrar o que você ama em arte. Vamos começar?"},

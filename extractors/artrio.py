@@ -54,6 +54,8 @@ def get_artwork_info(url):
     dom = etree.HTML(result.text)     
 
     artwork_info = {}
+    artwork_info['URL'] = url
+    artwork_info['Image_URL'] = dom.xpath('//img[@class="inner_zoom"]/@src')[0]
     artwork_info['Artist'] = dom.xpath('//div[@class="pl-20"]/h3/a/text()')[0]
     artwork_info['Title'] = string_handle.remove_unicode(dom.xpath('//div[@class="pl-20"]/h3/small/i/text()')[0])
     artwork_info['Size'] = string_handle.remove_unicode(dom.xpath('//div[@class="pl-20"]/small/text()')[0])
