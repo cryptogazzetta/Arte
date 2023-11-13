@@ -15,10 +15,10 @@ data-files
 charts
 
 # Models
-*.pkl
+#*.pkl
 
 # Data files
-*.csv
+#*.csv
 *.json
 
 # Logs
