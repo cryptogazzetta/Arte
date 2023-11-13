@@ -5,12 +5,61 @@ import back_end
 
 st.markdown(
     """
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+body {
+    color: #000000;
+    font-family: 'Lexend';
+    line-height: 1.6;
+}
+
+h {
+    color: #FFFFFF;
+    font-family: 'Playfair Display';
+    font-size: 48px;
+    padding: 0px;
+}
+
+h1 {
+    color: #FFFFFF;
+    font-size: 20px;
+    padding: 0px;
+}
+
+h2 {
+    color: #4a4a4a;
+    font-size: 20px;
+}
+
+.stButton>button {
+    background-color: #195921;
+    color: #ffffff;
+    height: 60px;
+    width: 60%;
+    margin-left: 20%;
+    margin-top: 40px;
+}
+
+/* Estilo para o preço sugerido */
+.price-suggested {
+    font-size: 24px;
+    background-color:
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Efeito de hover para o botão */
+.stButton button:hover {
+    background-color: #27642F;
+    color: #D1F2D1;
+}
+    </style>
     """,
     unsafe_allow_html=True,
 )
 
-st.title('Precificação de Pintura')
+st.markdown('<h>Marte</h>', unsafe_allow_html=True)
+st.markdown('<h1>Precificação de Pintura</h1>', unsafe_allow_html=True)
 
 artists_list = back_end.artists
 galleries_list = back_end.galleries
