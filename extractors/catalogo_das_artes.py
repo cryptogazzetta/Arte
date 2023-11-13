@@ -100,8 +100,8 @@ def get_all_artworks_info():
         artworks_info.append(artwork_info)
 
         if len(artworks_info) % batch_size == 0:
-            csv_handle.dict_list_to_csv(artworks_info, './temporary-files/catalogo_das_artes_artworks_links.csv')
+            csv_handle.dict_list_to_csv(artworks_info, './temporary-files/catalogo_das_artes_artworks_info.csv')
         
-    csv_handle.dict_list_to_csv(artworks_info, './temporary-files/catalogo_das_artes_artworks_links.csv')
+    csv_handle.dict_list_to_csv(artworks_info, './temporary-files/catalogo_das_artes_artworks_info.csv')
 
     driver.quit()
