@@ -8,7 +8,7 @@ __pycache__/
 
 # folders
 art_app_venv
-models
+#models
 temporary-files
 venv
 data-files
