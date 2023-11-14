@@ -1,3 +1,3 @@
 from extractors import catalogo_das_artes
 
-catalogo_das_artes.get_all_artworks_info()
+catalogo_das_artes.get_all_artworks_links()

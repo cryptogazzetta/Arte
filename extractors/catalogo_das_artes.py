@@ -34,12 +34,15 @@ def authenticate():
 
 
 def get_all_artworks_links():
-    # retrieve 'catalogo_das_artes_artworks_links.txt' file if it exists
     try:
+        # retrieve 'catalogo_das_artes_artworks_links.txt' file if it exists
         with open('./temporary-files/catalogo_das_artes_artworks_links.txt', 'r') as f:
             links = f.readlines()
         links = [link.strip() for link in links]
     except:
+        # otherwise, create an empty list and txt file
+        with open('./temporary-files/catalogo_das_artes_artworks_links.txt', 'w') as f:
+            pass
         links = []
     
     driver = authenticate()
