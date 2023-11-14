@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+from selenium.webdriver.chrome.options import Options
 # Project Modules
 from utils import csv_handle
 from utils import safe_extract_functions
@@ -14,7 +14,12 @@ def authenticate():
     password = 'Senha123'
 
     login_url = 'https://www.catalogodasartes.com.br/acesso/'
-    driver = webdriver.Chrome(executable_path='/opt/google/chrome')
+    
+    chrome_options = Options()
+    chrome_options.binary_location = '/opt/google/chrome'
+
+    # Instantiate ChromeDriver with the specified options
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(login_url)
 
     email_field = driver.find_element(By.XPATH, "//input[@id='cliente_email']")
