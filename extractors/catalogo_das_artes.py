@@ -14,7 +14,7 @@ def authenticate():
     password = 'Senha123'
 
     login_url = 'https://www.catalogodasartes.com.br/acesso/'
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(executable_path='/opt/google/chrome')
     driver.get(login_url)
 
     email_field = driver.find_element(By.XPATH, "//input[@id='cliente_email']")
