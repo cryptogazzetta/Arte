@@ -1,9 +1,9 @@
 import joblib
 import pandas as pd
 
-rf_model = joblib.load('../analysis/models/rf_br_marketplaces.pkl')
+rf_model = joblib.load('../../analysis/models/rf_br_marketplaces.pkl')
 
-x = pd.read_csv('../analysis/models/x_br_marketplaces.csv')
+x = pd.read_csv('../../analysis/models/x_br_marketplaces.csv')
 x_columns = x.columns
 
 collection = [
@@ -11,7 +11,8 @@ collection = [
               {'Area': 90, 'Artist': 'ATHOS BULCÃO', 'Buying_Price': 2000}
               ]
 
-def get_df_for_model(artworks_info):
+
+def get_df_for_model(collection):
     test_df = pd.DataFrame(columns=x_columns)
     for artwork in collection:
         for characteristics in artwork.keys():
