@@ -161,10 +161,10 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
         driver = authenticate()
 
     new_artworks_info = []
-    batch_size = 5
+    batch_size = 10
 
     try:
-        for artwork_link in artwork_links[-1600:]:
+        for artwork_link in artwork_links:
             print(artwork_link)
             artwork_info = get_artwork_info(driver, artwork_link)
             print(artwork_info)
@@ -175,7 +175,7 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
                 csv_handle.dict_list_to_csv(artworks_info, artworks_info_file_path)
 
                 # if there are at least 2 artworks with value other than False in 'Error', break the loop
-                if len([new_artwork_info for new_artwork_info in new_artworks_info if new_artwork_info['Error'] != False]) >= 2:
+                if len([new_artwork_info for new_artwork_info in new_artworks_info if new_artwork_info['Error'] != False]) >= 3:
                     break
 
                 new_artworks_info = []

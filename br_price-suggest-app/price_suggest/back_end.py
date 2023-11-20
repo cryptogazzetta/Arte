@@ -10,15 +10,14 @@ lots = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')
 lots_x_test = pd.read_csv('../../analysis/models/catalogo_X_test.csv')
 
 # provide lists of artists and techniques
-artists_list = lots['Artist'].unique().tolist()
-techniques_list = lots['Technique'].unique().tolist()
+artists_list = ['Candido Portinari (1903-1962)', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
+techniques_list = lots['Technique_fix'].unique().tolist()
+# Convert to string
+artists_list = [str(artist) for artist in artists_list]
 techniques_list = [str(technique) for technique in techniques_list]
 # Sort lists
 artists_list.sort()
 techniques_list.sort()
-# Add empty option
-artists_list.insert(0, ' ')
-techniques_list.insert(0, ' ')
 
 def get_input_dummies(characteristics):
     input_dummies = pd.DataFrame(columns=lots_x_test.columns)
@@ -53,7 +52,7 @@ def get_similar_lots(characteristics):
         similar_lots = similar_lots[similar_lots['Artist'] == characteristics['Artist']]
     # Filter by technique
     if characteristics['Technique'] != ' ':
-        similar_lots = similar_lots[similar_lots['Technique'] == characteristics['Technique']]
+        similar_lots = similar_lots[similar_lots['Technique_fix'] == characteristics['Technique']]
     # Filter by size
     if characteristics['Height (cm)']:
         # Tolerance range for size

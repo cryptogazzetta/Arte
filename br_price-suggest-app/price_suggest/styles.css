@@ -1,6 +1,5 @@
 body {
     color: #000000;
-    font-family: 'Lexend';
     line-height: 1.6;
 }
 
@@ -19,7 +18,8 @@ h1 {
 
 h2 {
     color: #4a4a4a;
-    font-size: 20px;
+    font-size: 18px;
+    padding: 2px;
 }
 
 .stButton>button {
@@ -29,15 +29,6 @@ h2 {
     width: 60%;
     margin-left: 20%;
     margin-top: 40px;
-}
-
-/* Estilo para o preço sugerido */
-.price-suggested {
-    font-size: 24px;
-    background-color:
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
 }
 
 /* Efeito de hover para o botão */

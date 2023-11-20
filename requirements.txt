@@ -10,4 +10,3 @@ selenium==4.11.2
 streamlit==1.25.0
 gunicorn==19.9.0
 chromedriver-binary==77.0.3865.40.0
-streamlit-carousel==0.1.1
