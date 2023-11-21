@@ -55,15 +55,13 @@ def get_similar_lots(characteristics):
         similar_lots = similar_lots[similar_lots['Artist'] == characteristics['Artist']]
     # Filter by technique
     if characteristics['Technique'] != ' ':
-        similar_lots = similar_lots[similar_lots['Technique'] == characteristics['Technique']]
+        similar_lots = similar_lots[similar_lots['Technique_fix'] == characteristics['Technique']]
     # Filter by size
     if characteristics['Height (cm)']:
-        # Tolerance range for size
-        size_range = 0.5
-        similar_lots = similar_lots[similar_lots['Height (cm)'] >= characteristics['Height (cm)']*(1-size_range)]
-        similar_lots = similar_lots[similar_lots['Height (cm)'] <= characteristics['Height (cm)']*(1+size_range)]
-        similar_lots = similar_lots[similar_lots['Width (cm)'] >= characteristics['Width (cm)']*(1-size_range)]
-        similar_lots = similar_lots[similar_lots['Width (cm)'] <= characteristics['Width (cm)']*(1+size_range)]
+        similar_lots = similar_lots[similar_lots['Height (cm)'] >= characteristics['Height (cm)'][0]]
+        similar_lots = similar_lots[similar_lots['Height (cm)'] <= characteristics['Height (cm)'][1]]
+        similar_lots = similar_lots[similar_lots['Width (cm)'] >= characteristics['Width (cm)'][0]]
+        similar_lots = similar_lots[similar_lots['Width (cm)'] <= characteristics['Width (cm)'][1]]
     
     # Sort by year of sale
     similar_lots = similar_lots.sort_values('Year of sale', ascending=False)

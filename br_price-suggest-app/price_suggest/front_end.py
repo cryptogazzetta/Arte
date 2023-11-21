@@ -1,10 +1,12 @@
+# External modules
 import streamlit as st
 # from streamlit_carousel import carousel
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-from matplotlib import rcParams
-# project modules
+# Project modules
 import back_end
+import chart
+
+
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
 ## IMPORT STYLES FROM .CSS FILE
@@ -50,95 +52,64 @@ email = st.text_input('E-mail', label_visibility="collapsed")
 #### OUTPUTS
 
 if st.button('Gerar relatório'):
-    characteristics = {'Artist': artist, 'Height (cm)': height, 'Width (cm)': width, 'Technique': technique}
 
-    artist = characteristics['Artist']
-    technique = characteristics['Technique']
-
-    # Get suggested price, similar lots, and performance from back_end
-    price_prediction = back_end.get_price_prediction(characteristics)
-    similar_lots = back_end.get_similar_lots(characteristics)
-    similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
-
-    if similar_lots.shape[0] == 0:
-        no_similar_lots = True
+    if not ('@' in email and '.' in email):
+        st.error('Por favor, insira um e-mail válido')
+        st.stop()
     else:
-        no_similar_lots = False
+        characteristics = {'Artist': artist, 'Height (cm)': height, 'Width (cm)': width, 'Technique': technique}
 
-    st.divider()
+        back_end.save_lead(email, characteristics)
 
+        artist = characteristics['Artist']
+        technique = characteristics['Technique']
 
-    # SHOW PRICE SUGGESTION    
-    st.markdown(f'<h1>{technique} by {artist}</h1>', unsafe_allow_html=True)
-    if no_similar_lots:
-        st.markdown(f'<p>No similar artworks were offered at auction</p>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<p>{similar_lots.shape[0]} Similar artworks were offered at auction</p>', unsafe_allow_html=True)
-    # Show price suggestion if all inputs are filled
-    st.markdown(f'<h1>Suggested Price: R$ {price_prediction:.2f}</h1>', unsafe_allow_html=True)
+        # Get suggested price, similar lots, and performance from back_end
+        price_prediction = back_end.get_price_prediction(characteristics)
+        similar_lots = back_end.get_similar_lots(characteristics)
+        similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
 
+        if similar_lots.shape[0] == 0:
+            no_similar_lots = True
+        else:
+            no_similar_lots = False
 
-    # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
-    st.markdown('<h2>Similar artworks total sales</h2>', unsafe_allow_html=True)
-    # st.line_chart(similar_lots_performance[['Total_Sales', 'Mean_Price']])
-    # Plotting
-    # Set Lexend font for better readability
-    rcParams['font.family'] = 'Lexend'
-
-    # Plotting
-    fig, ax1 = plt.subplots(figsize=(10, 5))
-
-    # Plot Total Sales and Mean Price on the left y-axis
-    color = 'tab:red'
-    ax1.set_xlabel('Year of Sale', color='white')
-    ax1.set_ylabel('Total Sales (R$)', color=color)
-    ax1.plot(similar_lots_performance['Year of sale'], similar_lots_performance['Total_Sales'], color=color, marker='o', label='Total Sales')
-    ax1.tick_params(axis='y', labelcolor=color)
-
-    # Create a second y-axis for Mean Price
-    ax2 = ax1.twinx()
-    color = 'tab:blue'
-    ax2.set_ylabel('Mean Price (R$)', color=color)
-    ax2.plot(similar_lots_performance['Year of sale'], similar_lots_performance['Mean_Price'], color=color, marker='o', label='Mean Price')
-    ax2.tick_params(axis='y', labelcolor=color)
-
-    # Set black background
-    fig.patch.set_facecolor('black')
-    ax1.set_facecolor('black')
-    ax2.set_facecolor('black')
-
-    # Include 'Year of Sale' on the x-axis for selected years
-
-    ax1.xaxis.label.set_color('white')
-    ax1.tick_params(axis='x', colors='white')
-
-    # Format y-axes as currency with no decimals
-    formatter = ticker.StrMethodFormatter('R${x:,.0f}')
-    ax1.yaxis.set_major_formatter(formatter)
-    ax2.yaxis.set_major_formatter(formatter)
-
-    # Display the legend
-    ax1.legend(loc='upper left', bbox_to_anchor=(0.75, 1))
-
-    # Display the plot using Streamlit
-    st.pyplot(fig)
+        st.divider()
 
 
-    # TABLE OF SIMILAR ARTWORKS AUCTIONED
-    st.dataframe(similar_lots[['Artist', 'Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)']], width=1000)
+        # SHOW PRICE SUGGESTION    
+        st.markdown(f'<h1>{technique} by {artist}</h1>', unsafe_allow_html=True)
+        if no_similar_lots:
+            st.markdown(f'<p>No similar artworks were offered at auction</p>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<p>{similar_lots.shape[0]} Similar artworks were offered at auction</p>', unsafe_allow_html=True)
+        # Show price suggestion if all inputs are filled
+        st.markdown(f'<h1>Suggested Price: R$ {price_prediction:.2f}</h1>', unsafe_allow_html=True)
 
 
-    # CAROUSEL OF SIMILAR ARTWORKS AUCTIONED
-    # st.markdown('<h2>Similar artworks auctioned</h2>', unsafe_allow_html=True)
-    # lots_to_slideshow = similar_lots.to_dict('records')
-    # # rename keys to match carousel component requirements
-    # for lot in lots_to_slideshow:
-    #     lot['img'] = lot.pop('img_url')
-    #     lot['title'] = f"R$ {lot.pop('Price (BRL)'):.2f}"
-    #     lot['text'] = f'{lot.pop("Technique")}, {lot.pop("Height (cm)")} x {lot.pop("Width (cm)")} cm'
-    # carousel(lots_to_slideshow, height=800)
+        # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
+        st.markdown('<h2>Similar artworks total sales</h2>', unsafe_allow_html=True)
+        # st.line_chart(similar_lots_performance[['Total_Sales', 'Mean_Price']])
+
+        
+        fig = chart.get_similar_lots_performance_chart(similar_lots_performance)
+        st.pyplot(fig)
+
+        # TABLE OF SIMILAR ARTWORKS AUCTIONED
+        st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)']], width=1000)
 
 
-    # TABLE OF SIMILAR ARTWORKS BEING SOLD AT MARKETPLACES
-    # st.markdown('<h2>Marketplace offers</h2>', unsafe_allow_html=True)
-    # st.write('Coming soon...')
+        # CAROUSEL OF SIMILAR ARTWORKS AUCTIONED
+        # st.markdown('<h2>Similar artworks auctioned</h2>', unsafe_allow_html=True)
+        # lots_to_slideshow = similar_lots.to_dict('records')
+        # # rename keys to match carousel component requirements
+        # for lot in lots_to_slideshow:
+        #     lot['img'] = lot.pop('img_url')
+        #     lot['title'] = f"R$ {lot.pop('Price (BRL)'):.2f}"
+        #     lot['text'] = f'{lot.pop("Technique")}, {lot.pop("Height (cm)")} x {lot.pop("Width (cm)")} cm'
+        # carousel(lots_to_slideshow, height=800)
+
+
+        # TABLE OF SIMILAR ARTWORKS BEING SOLD AT MARKETPLACES
+        # st.markdown('<h2>Marketplace offers</h2>', unsafe_allow_html=True)
+        # st.write('Coming soon...')

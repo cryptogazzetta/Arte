@@ -10,7 +10,7 @@ lots = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')
 lots_x_test = pd.read_csv('../../analysis/models/catalogo_X_test.csv')
 
 # provide lists of artists and techniques
-artists_list = ['Candido Portinari (1903-1962)', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
+artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
 techniques_list = lots['Technique_fix'].unique().tolist()
 # Convert to string
 artists_list = [str(artist) for artist in artists_list]
@@ -87,3 +87,13 @@ def get_similar_lots_performance(similar_lots):
     ).reset_index()
 
     return similar_lots_performance
+
+def save_lead(email, characteristics):
+    # save to csv
+    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Technique'])
+    lead.loc[0, 'Email'] = email
+    lead.loc[0, 'Artist'] = characteristics['Artist']
+    lead.loc[0, 'Height (cm)'] = characteristics['Height (cm)']
+    lead.loc[0, 'Width (cm)'] = characteristics['Width (cm)']
+    lead.loc[0, 'Technique'] = characteristics['Technique']
+    lead.to_csv('./lead_base.csv', mode='a', header=False, index=False)

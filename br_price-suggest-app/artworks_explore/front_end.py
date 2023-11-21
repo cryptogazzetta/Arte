@@ -1,11 +1,10 @@
 import streamlit as st
 from streamlit_carousel import carousel
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-from matplotlib import rcParams
 # project modules
 import back_end
+import chart
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 ## IMPORT STYLES FROM .CSS FILE
 with open('./styles.css') as f:
@@ -14,7 +13,8 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 ## PAGE TITLE
 st.markdown('<h>Marte</h>', unsafe_allow_html=True)
-st.markdown('<p>This tool allows you to explore price some artwork and the art market. Feel free to try it and share your thoughts ;)</p>', unsafe_allow_html=True)
+st.markdown('<p>Art Market Explorer</p>', unsafe_allow_html=True)
+st.markdown('<p>This tool allows you to explore the brazilian art market. Feel free to try it and share your thoughts ;)</p>', unsafe_allow_html=True)
 
 # Get lists of artists and techniques (converting techniques to string)
 artists_list = back_end.artists_list
@@ -57,8 +57,7 @@ if st.button('Get Report'):
     artist = characteristics['Artist']
     technique = characteristics['Technique']
 
-    # Get suggested price, similar lots, and performance from back_end
-    price_prediction = back_end.get_price_prediction(characteristics)
+    # Get similar lots and performance from back_end
     similar_lots = back_end.get_similar_lots(characteristics)
     similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
 
@@ -73,61 +72,17 @@ if st.button('Get Report'):
     
     st.markdown(f'<h1>{technique} by {artist}</h1>', unsafe_allow_html=True)
     st.markdown(f'<p>{similar_lots.shape[0]} Similar artworks were offered at auction</p>', unsafe_allow_html=True)
-    # Show price suggestion if all inputs are filled
-    if artist != 'Any artist' and technique != 'Any Technique' and height and width:
-        st.markdown(f'<h1>Suggested Price: R$ {price_prediction:.2f}</h1>', unsafe_allow_html=True)
 
 
     # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
     st.markdown('<h2>Similar artworks total sales</h2>', unsafe_allow_html=True)
-    # st.line_chart(similar_lots_performance[['Total_Sales', 'Mean_Price']])
-    # Plotting
-    # Set Lexend font for better readability
-    rcParams['font.family'] = 'Lexend'
 
-    # Plotting
-    fig, ax1 = plt.subplots(figsize=(10, 5))
-
-    # Plot Total Sales and Mean Price on the left y-axis
-    color = 'tab:red'
-    ax1.set_xlabel('Year of Sale', color='white')
-    ax1.set_ylabel('Total Sales (R$)', color=color)
-    ax1.plot(similar_lots_performance['Year of sale'], similar_lots_performance['Total_Sales'], color=color, marker='o', label='Total Sales')
-    ax1.tick_params(axis='y', labelcolor=color)
-
-    # Create a second y-axis for Mean Price
-    ax2 = ax1.twinx()
-    color = 'tab:blue'
-    ax2.set_ylabel('Mean Price (R$)', color=color)
-    ax2.plot(similar_lots_performance['Year of sale'], similar_lots_performance['Mean_Price'], color=color, marker='o', label='Mean Price')
-    ax2.tick_params(axis='y', labelcolor=color)
-
-    # Set black background
-    fig.patch.set_facecolor('black')
-    ax1.set_facecolor('black')
-    ax2.set_facecolor('black')
-
-    # Include 'Year of Sale' on the x-axis for selected years
-    selected_years = [2000, 2005, 2010, 2015, 2020]
-    ax1.set_xticks(selected_years)
-    ax1.set_xticklabels(selected_years)
-    ax1.xaxis.label.set_color('white')
-    ax1.tick_params(axis='x', colors='white')
-
-    # Format y-axes as currency with no decimals
-    formatter = ticker.StrMethodFormatter('R${x:,.0f}')
-    ax1.yaxis.set_major_formatter(formatter)
-    ax2.yaxis.set_major_formatter(formatter)
-
-    # Display the legend
-    ax1.legend(loc='upper left', bbox_to_anchor=(0.75, 1))
-
-    # Display the plot using Streamlit
+    fig = chart.get_similar_lots_performance_chart(similar_lots_performance)
     st.pyplot(fig)
 
 
     # TABLE OF SIMILAR ARTWORKS AUCTIONED
-    st.dataframe(similar_lots[['Artist', 'Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)']], width=1000)
+    st.dataframe(similar_lots[['Artist', 'Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)', 'Sold']], width=1000)
 
 
     # CAROUSEL OF SIMILAR ARTWORKS AUCTIONED

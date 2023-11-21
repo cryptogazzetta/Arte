@@ -4,11 +4,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-import os
+import pandas as pd
 # Project Modules
 from utils import csv_handle
 from utils import safe_extract_functions
 from infra import gcp
+
 
 ## UTILS
 def authenticate():
@@ -65,12 +66,18 @@ def write_links_and_last_page(links_file_path, last_page_file_path, links, last_
 
     gcp.store_file_in_gcs('art_market_data', links_file_path, last_page_file_path)
 
-def remove_link_duplicates():
-    with open('./temporary-files/catalogo_das_artes_artworks_links.txt', 'r') as f:
+def remove_link_duplicates(links_file_path):
+    with open(links_file_path, 'r') as f:
         links = f.readlines()
     links = list(set(links))
-    with open('./temporary-files/catalogo_das_artes_artworks_links.txt', 'w') as f:
+    with open(links_file_path, 'w') as f:
         f.writelines(links)
+
+def remove_info_duplicates(artworks_info_file_path):
+    artworks_info = pd.read_csv(artworks_info_file_path)
+    artworks_info = artworks_info.sort_values(by=['Error'])
+    artworks_info = artworks_info.drop_duplicates(subset=['url'], keep='last')
+    artworks_info.to_csv(artworks_info_file_path, index=False)
 
 
 ## EXTRACTING LINKS
@@ -189,17 +196,22 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
 
     driver.quit()
 
+    remove_info_duplicates(artworks_info_file_path)
+
 
 ## DEALING WITH FAILED EXTRACTIONS
-def get_failed_artworks_links(info_file_path):
-    artworks_info = csv_handle.csv_to_dict_list(info_file_path)
-    failed_artworks_links = [artwork_info['url'] for artwork_info in artworks_info]
+def get_failed_artworks_links(artworks_info_file_path):
+    artworks_info = csv_handle.csv_to_dict_list(artworks_info_file_path)
+    
+    failed_artworks_links = [artwork_info['url'] for artwork_info in artworks_info if artwork_info['Error'] != False]
 
     return failed_artworks_links
 ## OBS: pegando de trás pra frente
 def get_failed_artworks_info(artworks_info_file_path, failed_artworks_links_file_path):
 
     failed_artworks_links = get_failed_artworks_links(artworks_info_file_path)
+    print('Failed artworks links:' + str(len(failed_artworks_links)))
+
     ## PEGANDO DE TRÁS PRA FRENTE
     failed_artworks_links.reverse()
 
@@ -210,3 +222,4 @@ def get_failed_artworks_info(artworks_info_file_path, failed_artworks_links_file
     
     get_all_artworks_info(failed_artworks_links_file_path, artworks_info_file_path)
 
+    remove_info_duplicates(artworks_info_file_path)
