@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
 
 # Model trained in catalogo_das_artes.ipynb
-pricing_model = joblib.load('../../analysis/models/catalogo_gb_model.pkl')
 # Data aggregated in catalogo_das_artes.ipynb
 lots = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')
 # x test
 lots_x_test = pd.read_csv('../../analysis/models/catalogo_X_test.csv')
+pricing_model = joblib.load('../../analysis/models/catalogo_gb_model.pkl')
 
 # provide lists of artists and techniques
 artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
