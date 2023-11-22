@@ -15,13 +15,16 @@ def download_file(path):
     response = requests.get(file_url)
 
     if response.status_code == 200:
-        return response.content
+        return response
     else:
         return None
 
-lots = pd.read_csv(download_file('/analysis/models/catalogo_das_artes_lots.csv'))
-lots_x_test = pd.read_csv(download_file('/analysis/models/catalogo_X_test.csv'))
-pricing_model = joblib.load(download_file('/analysis/models/catalogo_gb_model.pkl'))
+lots_csv = download_file('/analysis/models/catalogo_das_artes_lots.csv')
+lots = pd.read_csv(lots_csv)
+lots_x_test_csv = download_file('/analysis/models/catalogo_X_test.csv')
+lots_x_test = pd.read_csv(lots_x_test_csv)
+model_pkl = download_file('/analysis/models/catalogo_gb_model.pkl')
+pricing_model = joblib.load(model_pkl)
 
 # provide lists of artists and techniques
 artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
