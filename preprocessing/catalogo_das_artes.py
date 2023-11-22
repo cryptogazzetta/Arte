@@ -7,6 +7,7 @@ def preprocess(raw_info_path, clean_info_path):
     lots = fix_artist(lots)
     lots = fix_dimensions(lots)
     lots = fix_price(lots)
+    lots = fix_technique(lots)
     lots = define_sold(lots)
     lots = define_year_of_sale(lots)
     lots = lots.drop(columns=['Dimensão', 'Avaliação', 'Data da Pesquisa'])
@@ -27,10 +28,10 @@ def fix_artist(lots):
     return lots
 
 def fix_dimensions(lots):
-    lots['Width'] = lots['Dimensão'].str.extract(r'(.*?) x')
-    lots['Width'] = lots['Width'].str.replace(' cm', '').str.replace(',', '.').astype(float)
-    lots['Height'] = lots['Dimensão'].str.extract(r'x (.*) cm')
-    lots['Height'] = lots['Height'].str.replace(' cm', '').str.replace(',', '.').astype(float)
+    lots['Height (cm)'] = lots['Dimensão'].str.extract(r'(.*?) x')
+    lots['Height (cm)'] = lots['Height (cm)'].str.replace(' cm', '').str.replace(',', '.').astype(float)
+    lots['Width (cm)'] = lots['Dimensão'].str.extract(r'x (.*) cm')
+    lots['Width (cm)'] = lots['Width (cm)'].str.replace(' cm', '').str.replace(',', '.').astype(float)
     return lots
 
 def fix_price(lots):
@@ -49,7 +50,7 @@ def map_technique(technique):
         for value in values:
             if value.lower() in technique.lower():
                 return key
-        return 'outro'
+    return 'outro'
 
 def fix_technique(lots):
 

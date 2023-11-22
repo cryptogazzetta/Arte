@@ -1,8 +1,10 @@
-from extractors import catalogo_das_artes
-# from preprocessing import catalogo_das_artes
-from infra import gcp
+from extractors import artsy_auctions as artsy_extract
+from preprocessing import catalogo_das_artes as preprocess
 
-# catalogo_das_artes.preprocess('./temporary-files/catalogo_das_artes_artworks_info.csv', './clean-files/catalogo_das_artes_artworks_info.csv')
-catalogo_das_artes.remove_info_duplicates('./temporary-files/catalogo_das_artes_artworks_info.csv')
+preprocess.preprocess('./temporary-files/catalogo_das_artes_artworks_info.csv', './clean-files/catalogo_das_artes_artworks_info.csv')
 
-catalogo_das_artes.get_failed_artworks_info('./temporary-files/catalogo_das_artes_artworks_info.csv', './temporary-files/catalogo_das_artes_failed_artworks_links.txt')
+# for i in range(5):
+#     extract.get_all_artworks_info('./temporary-files/catalogo_das_artes_artworks_links.txt', './temporary-files/catalogo_das_artes_artworks_info.csv')
+#     preprocess.preprocess('./temporary-files/catalogo_das_artes_artworks_info.csv', './clean-files/catalogo_das_artes_artworks_info.csv')
+
+# artsy_extract.get_all_artworks_info()

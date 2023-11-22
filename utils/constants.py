@@ -9,7 +9,10 @@ ARTSY_API_HEADERS = {
 EMAIL = "christian@fynt.io"
 SOTHEBYS_PASSWORD = "t#3u!%h9Up!JSZb"
 
-OPENAI_API_KEY = "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"
+# Artsy Auctions
+ARTSY_EMAIL = 'gazzetta.art@gmail.com'
+ARTSY_PASSWORD = 'Senha123'
+
 
 MATERIALS_OPTIONS = [
     "Acrílico", "Aquarela", "Carvão", "Cerâmica",
