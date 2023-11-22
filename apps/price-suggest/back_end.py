@@ -1,9 +1,9 @@
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
-import locale
+# import locale
 
-locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
+# locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
 
 # Model trained in catalogo_das_artes.ipynb
 pricing_model = joblib.load('../../analysis/models/catalogo_gb_model.pkl')
@@ -65,16 +65,12 @@ def get_similar_lots(characteristics):
         similar_lots = similar_lots[similar_lots['Width (cm)'] >= characteristics['Width (cm)']*(1-size_range)]
         similar_lots = similar_lots[similar_lots['Width (cm)'] <= characteristics['Width (cm)']*(1+size_range)]
     
-    # Sort by year of sale
-    similar_lots = similar_lots.sort_values('Year of sale', ascending=False)
-    # Reset index
-    similar_lots.set_index('Year of sale', inplace=True)
 
     # fill NaNs with empty string
     similar_lots.fillna('', inplace=True)
 
-    # sort by index
-    similar_lots.sort_index(inplace=True)
+    similar_lots.set_index('Year of sale', inplace=True)
+    similar_lots.sort_index(inplace=True, ascending=False)
 
     return similar_lots
 
