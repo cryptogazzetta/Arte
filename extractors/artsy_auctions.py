@@ -11,7 +11,7 @@ from utils import constants, extractor_functions
 def authenticate(url='https://www.artsy.net/auctions'):
     
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     driver = webdriver.Chrome(options=chrome_options)
     
     driver.get(url)
@@ -81,11 +81,12 @@ def get_artwork_info(driver, link):
     artwork_info['url'] = link
 
     # divs = extractor_functions.explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 GridColumns__Cell-sc-1g9p6xx-1  kkTyCy"]/div/div')
-    
-    div = driver.find_element(By.XPATH, '//div[@class="Box-sc-15se88d-0 Text-sc-18gcpao-0 cXRdiF hOupNU"]')
-    print('aaaa', div.text)
+    WebDriverWait(driver, 3)
+    divs = driver.find_element(By.XPATH, '//div/div[@class="Box-sc-15se88d-0 Text-sc-18gcpao-0 cXRdiF hOupNU"]')
+    # for div in divs:
+    #     print('aaaa', div.text)
         
-    # return divs.text
+    return divs
 
 
 def get_all_artworks_info():
