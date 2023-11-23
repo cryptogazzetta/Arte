@@ -5,6 +5,14 @@ import matplotlib.pyplot as plt
 
 import chart
 
+
+st.set_page_config(
+    page_title="Marte - Gestão de coleção",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
+
 # Get data
 collection = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')[500:512]
 collection = collection[['Artist', 'Technique_fix', 'Price (BRL)', 'Height (cm)', 'Width (cm)', 'Year of sale', 'Year']]

@@ -9,7 +9,7 @@ import chart
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 st.set_page_config(
-    page_title="Precificação de obras de arte",
+    page_title="Marte - Precificação de arte",
     page_icon=":💲:",
     layout="centered",
     initial_sidebar_state="collapsed"
