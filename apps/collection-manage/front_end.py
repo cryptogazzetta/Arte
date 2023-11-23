@@ -24,7 +24,7 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 ## PAGE TITLE
 st.markdown('<h>Marte</h>', unsafe_allow_html=True)
 st.markdown(
-    '<p>Criamos essa ferramenta para ajudar a precificar obras de arte com base no histórico de vendas em leilão. Fique à vontade para experimentar a ferramenta, compartilhar e propor sugestões ;) </p>',
+    '<p>Criamos essa ferramenta para ajudar a gerir coleções com base em análises quantitativas. Fique à vontade para experimentar a ferramenta, compartilhar e propor sugestões ;) </p>',
     unsafe_allow_html=True
 )
 
