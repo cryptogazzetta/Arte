@@ -1,32 +1,32 @@
-import pandas as pd
-import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
 
+import back_end
 import chart
 
-
+## PAGE CONFIG
 st.set_page_config(
     page_title="Marte - Gestão de coleção",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-
-# Get data
-collection = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')[500:512]
-collection = collection[['Artist', 'Technique_fix', 'Price (BRL)', 'Height (cm)', 'Width (cm)', 'Year of sale', 'Year']]
-collection.rename(columns={'Price (BRL)': 'Buying Price', 'Year of sale': 'Buying Date'}, inplace=True)
+## BACK END
+collection = back_end.get_data()
+collection = back_end.preprocess_data(collection)
 
 
-# Preprocess data
-collection['Price Prediction'] = collection['Buying Price'] * np.random.uniform(0.5, 50, collection.shape[0])
-collection['Return'] = collection['Price Prediction'] / collection['Buying Price'] - 1
-collection['Annualized Return'] = (1 + collection['Return'])**(1/(2021 - pd.to_datetime(collection['Buying Date']).dt.year)) - 1
-collection['Return'] = collection['Return'].apply(lambda x: "{:.2%}".format(x))
-collection['Annualized Return'] = collection['Annualized Return'].apply(lambda x: "{:.2%}".format(x))
+## Define CSS
+st.set_option('deprecation.showPyplotGlobalUse', False)
+css = back_end.get_file_from_github('apps/price-suggest/styles.css', format='css')
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
-collection.set_index('Artist', inplace=True)
+## PAGE TITLE
+st.markdown('<h>Marte</h>', unsafe_allow_html=True)
+st.markdown(
+    '<p>Criamos essa ferramenta para ajudar a precificar obras de arte com base no histórico de vendas em leilão. Fique à vontade para experimentar a ferramenta, compartilhar e propor sugestões ;) </p>',
+    unsafe_allow_html=True
+)
 
 
 # User options
