@@ -1,6 +1,5 @@
 # External modules
 import streamlit as st
-import locale
 import pandas as pd
 
 # Project modules
@@ -8,9 +7,6 @@ import back_end
 import chart
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
-
-# Set the locale to Brazilian Portuguese
-locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
 
 st.set_page_config(
     page_title="Precificação de obras de arte",
