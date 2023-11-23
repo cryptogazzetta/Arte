@@ -20,6 +20,7 @@ def get_file_from_github(file_path, format='csv'):
         elif format == 'pkl':
             file_content = BytesIO(response.content)
         elif format in ['txt', 'css']:
+            print('a', format)
             file_content = response.text
 
         return file_content
