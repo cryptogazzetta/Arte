@@ -17,7 +17,5 @@ def get_donut_chart(data):
     # Set the text color to white
     for text in texts + autotexts:
         text.set_color('black')
-
-    
     
     return fig
