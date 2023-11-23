@@ -88,15 +88,15 @@ if st.button('Gerar relatório'):
         st.markdown(f'<p>Não encontramos obras similares no histórico de leilões.</p>', unsafe_allow_html=True)
     else:
         st.markdown(f'<p>{similar_lots.shape[0]} obras similares foram encontradas no histórico.</p>', unsafe_allow_html=True)
-    # Show price suggestion if all inputs are filled
-    st.markdown(f'<p>Preço sugerido: R${price_prediction}</p>', unsafe_allow_html=True)
+        # Show price suggestion if all inputs are filled
+        st.markdown(f'<p>Preço sugerido: R${price_prediction}</p>', unsafe_allow_html=True)
 
 
-    # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
-    st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
+        # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
+        st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
 
-    fig = chart.get_similar_lots_performance_chart(similar_lots_performance)
-    st.pyplot(fig)
+        fig = chart.get_similar_lots_performance_chart(similar_lots_performance)
+        st.pyplot(fig)
 
-    # TABLE OF SIMILAR ARTWORKS AUCTIONED
-    st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)', 'Sold']], width=1000)
+        # TABLE OF SIMILAR ARTWORKS AUCTIONED
+        st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)', 'Sold']], width=1000)

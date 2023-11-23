@@ -64,8 +64,11 @@ def get_input_dummies(characteristics):
     return input_dummies
 
 def get_price_prediction(characteristics):
-    input_df = get_input_dummies(characteristics)
-    price_prediction = pricing_model.predict(input_df.to_numpy())[0]
+    # input_df = get_input_dummies(characteristics)
+    # price_prediction = pricing_model.predict(input_df.to_numpy())[0]
+
+    similar_lots = get_similar_lots(characteristics)
+    price_prediction = similar_lots['Price (BRL)'].median()
 
     return price_prediction
 
