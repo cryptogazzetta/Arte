@@ -118,7 +118,9 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
     else:
         pass
 
-    artworks_info = extractor_functions.read_artworks_info_file(artworks_info_file_path)
+    artworks_info = pd.read_csv(artworks_info_file_path) 
+    existing_links = artworks_info['url'].tolist()
+    artworks_links = [link for link in artworks_links if link not in existing_links]
 
     driver = authenticate()
 
@@ -131,8 +133,8 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
             new_artworks_info.append(artwork_info)
 
             if len(new_artworks_info) % batch_size == 0:
-                artworks_info += new_artworks_info
-                csv_handle.dict_list_to_csv(artworks_info, artworks_info_file_path)
+                artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)])
+                artworks_info.to_csv(artworks_info_file_path)
 
                 # if there are at least 2 artworks with value other than False in 'Error', break the loop
                 if len([new_artwork_info for new_artwork_info in new_artworks_info if new_artwork_info['Error'] != False]) >= 3:
@@ -141,8 +143,8 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
                 new_artworks_info = []
 
         if new_artworks_info:
-            artworks_info += new_artworks_info
-            csv_handle.dict_list_to_csv(artworks_info, artworks_info_file_path)
+            artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)])
+            artworks_info.to_csv(artworks_info_file_path)
     except Exception as e:
         print(e)
         pass

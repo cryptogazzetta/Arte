@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # Project Modules
 from utils import constants, extractor_functions, csv_handle
+import pandas as pd
 
 
 ## UTILS
@@ -84,19 +85,25 @@ def get_artwork_info(driver, link):
     artwork_info = {}
     artwork_info['url'] = link
 
-    artwork_info['Price'] = extractor_functions.safe_explicit_wait(driver, '//div[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0  bUuBLd")]').text
+    price = extractor_functions.safe_explicit_wait(driver, '//div[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0  bUuBLd")]')
+    artist = extractor_functions.safe_explicit_wait(driver, '//a[contains(@class, "RouterLink__RouterAwareLink-sc-1nwbtp5-0 dikvRF")]')
+    title = extractor_functions.safe_explicit_wait(driver, '//h1[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0 OfSrA gyuZDD")]')
+    date = extractor_functions.safe_explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 Text-sc-18gcpao-0 fIDNCK kFGRHf"]')
+    table_rows = extractor_functions.safe_explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 giFrDh"]')
 
-    # artist = extractor_functions.safe_explicit_wait(driver, '//div[contains(@class, "RouterLink__RouterAwareLink-sc-1nwbtp5-0 dikvRF")]')
-    # artwork_info['Artist_name'] = artist.text
-    # artwork_info['Artist_url'] = artist.get_attribute('href')
-    
-    # table_rows = extractor_functions.safe_explicit_wait( '//div[contains(@class, "Box-sc-15se88d-0 giFrDh")]')
-
-    # if table_rows:
-    #     for row in table_rows:
-    #         key = row.find_element(By.XPATH, './div[1]').text
-    #         value = row.find_element(By.XPATH, './div[2]').text
-    #         artwork_info[key] = value
+    try:
+        artwork_info['Price'] = price[0].text
+        artwork_info['Artist_name'] = artist[0].text
+        artwork_info['Artist_url'] = artist[0].get_attribute('href')
+        artwork_info['Title'] = title[0].text
+        artwork_info['Date'] = date[0].text
+        for row in table_rows:
+            key = row.find_element(By.XPATH, './div[1]').text
+            value = row.find_element(By.XPATH, './div[2]').text
+            artwork_info[key] = value 
+    except Exception as e:
+        print(e)
+        artwork_info['Error'] = 'got error extracting info: ' + str(e)
         
     return artwork_info
 
@@ -108,38 +115,34 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
         return
     else:
         pass
-    print('got artworks links')
 
     # Get existing artworks info
-    artworks_info = extractor_functions.read_artworks_info_file(artworks_info_file_path) 
-    print('got artworks info')
+    try:
+        artworks_info = pd.read_csv(artworks_info_file_path)
+        existing_links = artworks_info['url'].tolist()
+        artworks_links = [link for link in artworks_links if link not in existing_links]
+    except:
+        artworks_info = pd.DataFrame()
 
     driver = authenticate('https://www.artsy.net/auctions', click_to_log=True)
 
     new_artworks_info = []
-    batch_size = 10
+    batch_size = 50
 
     try:
-        for artwork_link in artworks_links[:28]:
+        for artwork_link in artworks_links:
             artwork_info = get_artwork_info(driver, artwork_link)
             new_artworks_info.append(artwork_info)
 
-
             if len(new_artworks_info) % batch_size == 0:
-                artworks_info += new_artworks_info
-                print('writing to csv')
-                csv_handle.dict_list_to_csv(artworks_info, artworks_info_file_path)
-
-                # if there are at least 2 artworks with value other than False in 'Error', break the loop
-                if len([new_artwork_info for new_artwork_info in new_artworks_info if new_artwork_info['Error'] != False]) >= 3:
-                    break
-
+                artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)], ignore_index=True)
+                artworks_info.to_csv(artworks_info_file_path)
+                
                 new_artworks_info = []
 
         if new_artworks_info:
-            artworks_info += new_artworks_info
-            print('writing to csv')
-            csv_handle.dict_list_to_csv(artworks_info, artworks_info_file_path)
+            artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)])
+            artworks_info.to_csv(artworks_info_file_path)
     except Exception as e:
         print(e)
         pass

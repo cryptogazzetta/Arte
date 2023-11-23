@@ -1,8 +1,10 @@
+# External Modules
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-
+import pandas as pd
+# Project Modules
 from utils import csv_handle
 # from infra import gcp
 
@@ -42,19 +44,19 @@ def safe_explicit_wait(driver, search_key, by='xpath', timeout=10):
     try:
         if by == 'xpath':    
             return WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.XPATH, search_key))
+                EC.presence_of_all_elements_located((By.XPATH, search_key))
             )
         elif by == 'partial_link_text':
             return WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, search_key))
+                EC.presence_of_all_elements_located((By.PARTIAL_LINK_TEXT, search_key))
             )
         elif by == 'tag_name':
             return WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.TAG_NAME, search_key))
+                EC.presence_of_all_elements_located((By.TAG_NAME, search_key))
             )
         elif by == 'class_name':
             return WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.CLASS_NAME, search_key))
+                EC.presence_of_all_elements_located((By.CLASS_NAME, search_key))
             )
     except TimeoutException as e:
         print(f'Timeout waiting for element with search_key: {search_key}')
@@ -97,17 +99,3 @@ def read_artworks_links_file(links_file_path):
             artwork_links = f.readlines()
     artwork_links = [link.strip() for link in artwork_links]
     return artwork_links
-
-def read_artworks_info_file(artworks_info_file_path):
-# retrieve 'artworks_info.csv' file if it exists
-    try:
-        artworks_info = csv_handle.csv_to_dict_list(artworks_info_file_path)
-        # remove from artwork_links the URLs already in artworks_info
-        artworks_links = [link for link in artworks_links if link not in [artwork_info['url'] for artwork_info in artworks_info]]
-        # bring back the ones with 'Error' != False in artworks_info
-        artworks_links += [artwork_info['url'] for artwork_info in artworks_info if artwork_info['Error'] != False]
-    except Exception as e:
-        print(e)
-        artworks_info = []
-    
-    return artworks_info

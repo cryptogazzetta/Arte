@@ -6,8 +6,8 @@ from preprocessing import catalogo_das_artes as preprocess
 links_file_path = './temporary-files/artsy_auctions_artworks_links.txt'
 links_last_page_file_path = './temporary-files/artsy_auctions_last_page.txt'
 artworks_info_file_path = './temporary-files/artsy_auctions_artworks_info.csv'
-a = artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
-print(a)
+link = 'https://www.artsy.net/auction-result/4370761'
+artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
 
 
 

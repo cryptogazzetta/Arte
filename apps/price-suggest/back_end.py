@@ -1,12 +1,36 @@
+# External Modules
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
+import requests
+from io import StringIO, BytesIO
+# Project Modules
 
-base_url = 'https://raw.githubusercontent.com/cryptogazzetta/Arte'
 
-lots = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')
-lots_x_test = pd.read_csv('../../analysis/models/catalogo_X_test.csv')
-pricing_model = joblib.load('../../analysis/models/catalogo_gb_model.pkl')
+## UTILS
+def get_file_from_github(file_path, format='csv'):
+    url = f'https://raw.githubusercontent.com/cryptogazzetta/Arte/main/{file_path}'
+
+    # Make a GET request to the URL
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        if format == 'csv':
+            file_content = StringIO(response.text)
+        elif format == 'pkl':
+            file_content = BytesIO(response.content)
+
+        return file_content
+    else:
+        print(f"Failed to fetch the file. Status code: {response.status_code}")
+
+## BACK END
+
+# Import files from github
+lots = pd.read_csv(get_file_from_github('analysis/models/catalogo_das_artes_lots.csv'))
+
+lots_x_test = pd.read_csv(get_file_from_github('analysis/models/catalogo_X_test.csv'))
+pricing_model = joblib.load(get_file_from_github('analysis/models/catalogo_gb_model.pkl', format='pkl'))
 
 # provide lists of artists and techniques
 artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
