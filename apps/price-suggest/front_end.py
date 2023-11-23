@@ -15,9 +15,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-## IMPORT STYLES FROM .CSS FILE
-with open('./styles.css') as f:
-    css = f.read()
+css = back_end.get_file_from_github('apps/price-suggest/styles.css', format='css')
+
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 ## PAGE TITLE
@@ -90,8 +89,7 @@ if st.button('Gerar relatório'):
     else:
         st.markdown(f'<p>{similar_lots.shape[0]} obras similares foram encontradas no histórico.</p>', unsafe_allow_html=True)
     # Show price suggestion if all inputs are filled
-    formatted_price_prediction = locale.format_string("%.0f", price_prediction, grouping=True)
-    st.markdown(f'<p>Preço sugerido: R${formatted_price_prediction}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p>Preço sugerido: R${price_prediction}</p>', unsafe_allow_html=True)
 
 
     # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
