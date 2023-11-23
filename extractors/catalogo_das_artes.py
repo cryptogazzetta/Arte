@@ -110,38 +110,24 @@ def get_artwork_info(driver, link):
     return artwork_info
 
 def get_all_artworks_info(links_file_path, artworks_info_file_path):
-    # get links
-    with open(links_file_path, 'r') as f:
-        artwork_links = f.readlines()
-    artwork_links = [link.strip() for link in artwork_links]
-
-    # retrieve 'artworks_info.csv' file if it exists
-    try:
-        artworks_info = csv_handle.csv_to_dict_list(artworks_info_file_path)
-        # remove from artwork_links the URLs already in artworks_info
-        artwork_links = [link for link in artwork_links if link not in [artwork_info['url'] for artwork_info in artworks_info]]
-        # bring back the ones with 'Error' != False in artworks_info
-        artwork_links += [artwork_info['url'] for artwork_info in artworks_info if artwork_info['Error'] != False]
-        
-    except Exception as e:
-        print(e)
-        artworks_info = []
-
-    # Check if artwork_links is empty. Otherwise, authenticate and start extracting info
-    if not artwork_links:
+    artworks_links = extractor_functions.read_artworks_links_file(links_file_path)
+    
+    if not artworks_links:
         print('No new artworks to extract')
         return
     else:
-        driver = authenticate()
+        pass
+
+    artworks_info = extractor_functions.read_artworks_info_file(artworks_info_file_path)
+
+    driver = authenticate()
 
     new_artworks_info = []
     batch_size = 10
 
     try:
-        for artwork_link in artwork_links:
-            print(artwork_link)
+        for artwork_link in artworks_links:
             artwork_info = get_artwork_info(driver, artwork_link)
-            print(artwork_info)
             new_artworks_info.append(artwork_info)
 
             if len(new_artworks_info) % batch_size == 0:

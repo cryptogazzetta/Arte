@@ -1,33 +1,15 @@
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
-import requests
-from io import StringIO
 
-
-# GitHub raw file URL
 base_url = 'https://raw.githubusercontent.com/cryptogazzetta/Arte'
 
-
-def download_file(path):
-    file_url = f'{base_url}{path}'
-    # Download the file
-    response = requests.get(file_url)
-
-    if response.status_code == 200:
-        return response
-    else:
-        return None
-
-lots_csv = download_file('/analysis/models/catalogo_das_artes_lots.csv')
-lots = pd.read_csv(lots_csv)
-lots_x_test_csv = download_file('/analysis/models/catalogo_X_test.csv')
-lots_x_test = pd.read_csv(lots_x_test_csv)
-model_pkl = download_file('/analysis/models/catalogo_gb_model.pkl')
-pricing_model = joblib.load(model_pkl)
+lots = pd.read_csv('../../analysis/models/catalogo_das_artes_lots.csv')
+lots_x_test = pd.read_csv('../../analysis/models/catalogo_X_test.csv')
+pricing_model = joblib.load('../../analysis/models/catalogo_gb_model.pkl')
 
 # provide lists of artists and techniques
-artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro']
+artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
 techniques_list = lots['Technique_fix'].unique().tolist()
 techniques_list = [item.capitalize() for item in techniques_list]
 

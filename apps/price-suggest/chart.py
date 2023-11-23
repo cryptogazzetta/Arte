@@ -8,15 +8,15 @@ def get_similar_lots_performance_chart(similar_lots_performance):
     years = similar_lots_performance['Year of sale'].astype(int)
 
     # Plot Total Sales on the left y-axis
-    color = '#7cf28a'
-    ax1.set_ylabel('Total Sales (R$)', color=color)
-    ax1.bar(years, similar_lots_performance['Total_Sales'], color=color, label='Total Sales')
+    color = '#8a8888'
+    ax1.set_ylabel('Sales Count', color=color)
+    ax1.bar(years, similar_lots_performance['Sales_Count'], color=color, label='Sales Count')
     ax1.axhline(0, color='white', linewidth=1)  # Include the line of the horizontal axis for Total Sales
     ax1.tick_params(axis='y', labelcolor=color)
 
     # Create a second y-axis for Mean Price
     ax2 = ax1.twinx()
-    color = '#8a8888'
+    color = '#7cf28a'
     ax2.set_ylabel('Mean Price (R$)', color=color)
     ax2.plot(years, similar_lots_performance['Mean_Price'], color=color, label='Mean Price')
     ax2.tick_params(axis='y', labelcolor=color)
@@ -36,7 +36,7 @@ def get_similar_lots_performance_chart(similar_lots_performance):
 
     # Format y-axes as currency with no decimals
     formatter = ticker.StrMethodFormatter('R${x:,.0f}')
-    ax1.yaxis.set_major_formatter(formatter)
+    # ax1.yaxis.set_major_formatter(formatter)
     ax2.yaxis.set_major_formatter(formatter)
 
     # Remove the legend

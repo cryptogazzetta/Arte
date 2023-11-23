@@ -1,6 +1,9 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+
+from utils import csv_handle
 # from infra import gcp
 
 ## Utils
@@ -20,8 +23,49 @@ def safe_extract_multiple(driver, xpath):
         print('Error extracting elements with xpath: ' + xpath)
         return None
 
-# Usage example:
-# artsy_extract.get_all_artworks_links('https://www.artsy.net/artist/victor-vasarely/auction-results?hide_upcoming=false&allow_empty_created_dates=true&currency=&include_estimate_range=false&include_unknown_prices=true&allow_unspecified_sale_dates=true&page=', './temporary-files/artsy_auctions_artworks_links.txt', './temporary-files/artsy_auctions_last_page.txt')
+
+def explicit_wait(driver, search_key, by='xpath', timeout=10):
+    if by == 'xpath':    
+        return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.XPATH, search_key))
+        )
+    elif by == 'partial_link_text':
+        return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, search_key))
+        )
+    elif by == 'tag_name':
+        return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((By.TAG_NAME, search_key))
+        )
+
+def safe_explicit_wait(driver, search_key, by='xpath', timeout=10):
+    try:
+        if by == 'xpath':    
+            return WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.XPATH, search_key))
+            )
+        elif by == 'partial_link_text':
+            return WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, search_key))
+            )
+        elif by == 'tag_name':
+            return WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.TAG_NAME, search_key))
+            )
+        elif by == 'class_name':
+            return WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.CLASS_NAME, search_key))
+            )
+    except TimeoutException as e:
+        print(f'Timeout waiting for element with search_key: {search_key}')
+        # Handle the TimeoutException as needed
+        return None
+    except Exception as e:
+        print(f'Error waiting for element with search_key: {search_key}')
+        # Handle other exceptions if needed
+        return None
+
+## INTERACT WITH LINKS (TXT), LAST_PAGE (TXT) AND INFO (CSV) FILES
 def write_links_and_last_page(links_file_path, last_page_file_path, links, last_page):
     with open(links_file_path, 'w') as f:
         f.writelines([link + '\n' for link in links])
@@ -48,17 +92,22 @@ def read_links_and_last_page(links_file_path, links_last_page_file_path):
 
     return links, last_page
 
+def read_artworks_links_file(links_file_path):
+    with open(links_file_path, 'r') as f:
+            artwork_links = f.readlines()
+    artwork_links = [link.strip() for link in artwork_links]
+    return artwork_links
 
-def explicit_wait(driver, search_key, by='xpath', timeout=10):
-    if by == 'xpath':    
-        return WebDriverWait(driver, timeout).until(
-            EC.visibility_of_element_located((By.XPATH, search_key))
-        )
-    elif by == 'partial_link_text':
-        return WebDriverWait(driver, timeout).until(
-            EC.visibility_of_element_located((By.PARTIAL_LINK_TEXT, search_key))
-        )
-    elif by == 'tag_name':
-        return WebDriverWait(driver, timeout).until(
-            EC.visibility_of_element_located((By.TAG_NAME, search_key))
-        )
+def read_artworks_info_file(artworks_info_file_path):
+# retrieve 'artworks_info.csv' file if it exists
+    try:
+        artworks_info = csv_handle.csv_to_dict_list(artworks_info_file_path)
+        # remove from artwork_links the URLs already in artworks_info
+        artworks_links = [link for link in artworks_links if link not in [artwork_info['url'] for artwork_info in artworks_info]]
+        # bring back the ones with 'Error' != False in artworks_info
+        artworks_links += [artwork_info['url'] for artwork_info in artworks_info if artwork_info['Error'] != False]
+    except Exception as e:
+        print(e)
+        artworks_info = []
+    
+    return artworks_info

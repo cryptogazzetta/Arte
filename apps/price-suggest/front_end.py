@@ -7,6 +7,8 @@ import pandas as pd
 import back_end
 import chart
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 # Set the locale to Brazilian Portuguese
 locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
 
