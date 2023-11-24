@@ -36,9 +36,14 @@ techniques_list = back_end.techniques_list
 st.markdown('<h2>Artista</h2>', unsafe_allow_html=True)
 artist = st.selectbox('Artista', artists_list, label_visibility="collapsed", index=0)
 
-# Technique
-st.markdown('<h2>Técnica</h2>', unsafe_allow_html=True)
-technique = st.selectbox('Técnica', techniques_list, label_visibility="collapsed")
+# Technique and Year
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown('<h2>Técnica</h2>', unsafe_allow_html=True)
+    technique = st.selectbox('Técnica', techniques_list, label_visibility="collapsed") 
+with col2:
+    st.markdown('<h2>Ano</h2>', unsafe_allow_html=True)
+    year = st.selectbox('Ano', [''] + list(range(1900, 2023)), label_visibility="collapsed")
 
 # Measures
 col1, col2 = st.columns(2)

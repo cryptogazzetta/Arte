@@ -5,8 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import pandas as pd
 # Project Modules
-from utils import csv_handle
-# from infra import gcp
+
 
 ## Utils
 def safe_extract(driver, xpath):
@@ -24,7 +23,6 @@ def safe_extract_multiple(driver, xpath):
     except:
         print('Error extracting elements with xpath: ' + xpath)
         return None
-
 
 def explicit_wait(driver, search_key, by='xpath', timeout=10):
     if by == 'xpath':    
@@ -67,35 +65,66 @@ def safe_explicit_wait(driver, search_key, by='xpath', timeout=10):
         # Handle other exceptions if needed
         return None
 
-## INTERACT WITH LINKS (TXT), LAST_PAGE (TXT) AND INFO (CSV) FILES
-def write_links_and_last_page(links_file_path, last_page_file_path, links, last_page):
-    with open(links_file_path, 'w') as f:
-        f.writelines([link + '\n' for link in links])
-    with open(last_page_file_path, 'w') as f:
-        f.write(str(last_page))
 
-    # gcp.store_file_in_gcs('art_market_data', links_file_path, last_page_file_path)
+## INTERACT WITH LINKS (TXT)
+def read_links(links_file_path, artist=None):
+    try:
+        links_df = pd.read_csv(links_file_path, names=['url', 'Artist'])
+    except:
+        print('No links file found')
+        links_df = pd.DataFrame(columns=['url', 'Artist'])
 
-def read_links_and_last_page(links_file_path, links_last_page_file_path):
+    # Filter links based on the provided artist
+    if artist:
+        filtered_links = links_df[links_df['Artist'] == artist]['url'].tolist()
+    else:
+        filtered_links = links_df['url'].tolist()
+
+    return filtered_links
+
+def write_links(artist_name, new_links, links_file_path):
+    existing_links_df = pd.read_csv(links_file_path, names=['url', 'Artist'])
+    new_links_df = pd.DataFrame({'Artist': [artist_name] * len(new_links), 'url': new_links})
+    
+    links_df = pd.concat([existing_links_df, new_links_df], ignore_index=True)
+    links_df.drop_duplicates(inplace=True)
+    links_df.to_csv(links_file_path, index=False)
+
+
+## INTERACT WITH LAST_PAGE (TXT)
+def read_last_page(artist_name, links_last_page_file_path):
     try:
-        with open(links_file_path, 'r') as f:
-            links = list(set(line.strip() for line in f.readlines()))
-    except FileNotFoundError:
-        links = []
-        with open(links_file_path, 'w') as f:
-            f.write('')
-    try:
-        with open(links_last_page_file_path, 'r') as f:
-            last_page = int(f.read())
-    except FileNotFoundError:
+        last_page_file = pd.read_csv(links_last_page_file_path, names=['last_page'])
+        last_page = last_page_file.loc[artist_name, 'last_page']
+    except:
         last_page = 1
-        with open(links_last_page_file_path, 'w') as f:
-            f.write(str(last_page))
+        last_page_file = pd.DataFrame(columns=['last_page'], index = [artist_name])
+        last_page_file.to_csv
+        
+    return last_page
 
-    return links, last_page
+def write_last_page(last_page_file_path, artist_name, last_page):
+    last_page_file = pd.read_csv(last_page_file_path, index_col=0, names=['last_page'])
+    last_page_file.loc[artist_name, 'last_page'] = last_page
+    last_page_file.to_csv(last_page_file_path)
 
-def read_artworks_links_file(links_file_path):
-    with open(links_file_path, 'r') as f:
-            artwork_links = f.readlines()
-    artwork_links = [link.strip() for link in artwork_links]
-    return artwork_links
+
+## INTERACT WITH ARTWORKS INFO (CSV)
+def read_artworks_info(artworks_info_file_path):
+    try:
+        artworks_info = pd.read_csv(artworks_info_file_path)
+        existing_links = artworks_info['url'].tolist()
+    except:
+        artworks_info = pd.DataFrame(columns=['url'], index=[0])
+        existing_links = []
+    
+    return artworks_info, existing_links
+
+def write_artworks_info(artworks_info_file_path, new_artworks_info):
+    artworks_info = pd.read_csv(artworks_info_file_path, names=['url', 'Artist'])
+    print('velho:', artworks_info.shape)
+    print('novo:', new_artworks_info.shape)
+
+    artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)], ignore_index=True)
+    artworks_info.to_csv(artworks_info_file_path, index=False)
+

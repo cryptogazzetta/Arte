@@ -13,6 +13,7 @@ temporary-files
 venv
 data-files
 charts
+.devcontainer
 
 # Models
 #*.pkl

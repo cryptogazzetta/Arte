@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 import pandas as pd
 # Project Modules
 from utils import csv_handle
-from utils import extractor_functions
+from extractors import utils
 from infra import gcp
 
 
@@ -25,16 +25,16 @@ def authenticate():
     driver.get(login_url)
 
     
-    email_field = extractor_functions.explicit_wait(driver, "//input[@id='cliente_email']")
+    email_field = utils.explicit_wait(driver, "//input[@id='cliente_email']")
     email_field.send_keys(email)
-    password_field = extractor_functions.explicit_wait(driver, "//input[@id='cliente_senha']")
+    password_field = utils.explicit_wait(driver, "//input[@id='cliente_senha']")
     password_field.send_keys(password)
 
-    enter_button = extractor_functions.explicit_wait(driver, "//button[@class='btn botao-invertido-fixo']")
+    enter_button = utils.explicit_wait(driver, "//button[@class='btn botao-invertido-fixo']")
     enter_button.click()
 
     try:
-        extractor_functions.explicit_wait(driver, "SAIR", by='partial_link_text')
+        utils.explicit_wait(driver, "SAIR", by='partial_link_text')
     finally:
         pass
 
@@ -46,12 +46,15 @@ def get_artworks_links_from_page(driver, base_url, page):
     paintings_url = f'{base_url}{page}/'
     driver.get(paintings_url)
     
-    cards = extractor_functions.explicit_wait(driver, '//div[@class="card-image"]/a')
+    cards = utils.explicit_wait(driver, '//div[@class="card-image"]/a')
     return list(set(card.get_attribute('href') for card in cards))
 
-def get_all_artworks_links(base_url, last_page, links_file_path, links_last_page_file_path):
-    links, last_page_scraped = extractor_functions.read_links_and_last_page(links_file_path, links_last_page_file_path)
-    print(last_page_scraped)
+def get_all_artworks_links(artist_name, links_file_path, links_last_page_file_path):
+    links, last_page_scraped = utils.read_links_and_last_page(links_file_path, links_last_page_file_path)
+    
+    base_url = f'https://www.catalogodasartes.com.br/artistas/{artist_name}/?page=' # placeholder
+
+    last_page = 100 # placeholder
 
     driver = authenticate()
 
@@ -61,7 +64,8 @@ def get_all_artworks_links(base_url, last_page, links_file_path, links_last_page
         # Remove duplicates
         links = list(set(links))
 
-        extractor_functions.write_links_and_last_page(links_file_path, links_last_page_file_path, links, last_page_scraped)
+        utils.write_links(links_file_path, links)
+        utils.write_last_page(links_last_page_file_path, artist_name, last_page_scraped)
         last_page_scraped += 1
 
     driver.quit()
@@ -84,13 +88,13 @@ def get_artwork_info(driver, link):
     artwork_info['url'] = link
     # Image URL
     try:
-        artwork_info['img_url'] = extractor_functions.explicit_wait(driver, '//img[contains(@class, "produto-imagem")]').get_attribute('src')
+        artwork_info['img_url'] = utils.explicit_wait(driver, '//img[contains(@class, "produto-imagem")]').get_attribute('src')
     except:
         artwork_info['img_url'] = None
         
     # Table content
     try:
-        table_element = extractor_functions.explicit_wait(driver, '//table[@class="produto-tabela"]')
+        table_element = utils.explicit_wait(driver, '//table[@class="produto-tabela"]')
         rows = table_element.find_elements(By.TAG_NAME, 'tr')
         for row in rows:
             cells = row.find_elements(By.TAG_NAME, 'td')
@@ -110,7 +114,7 @@ def get_artwork_info(driver, link):
     return artwork_info
 
 def get_all_artworks_info(links_file_path, artworks_info_file_path):
-    artworks_links = extractor_functions.read_artworks_links_file(links_file_path)
+    artworks_links = utils.read_artworks_links_file(links_file_path)
     
     if not artworks_links:
         print('No new artworks to extract')
