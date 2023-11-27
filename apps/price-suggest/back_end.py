@@ -36,8 +36,7 @@ pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions
 
 # provide lists of artists and techniques
 artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
-techniques_list = lots['Technique'].unique().tolist()
-techniques_list = [item.capitalize() for item in techniques_list]
+techniques_list = ['Print', 'Painting', 'Drawing']
 
 # Convert to string
 artists_list = [str(artist) for artist in artists_list]
@@ -95,7 +94,7 @@ def get_similar_lots(characteristics):
     similar_lots.fillna('', inplace=True)
 
     similar_lots.set_index('Year of sale', inplace=True)
-    similar_lots.sort_index(inplace=True, ascending=False)
+    # similar_lots.sort_index(inplace=True, ascending=False)
 
     return similar_lots
 

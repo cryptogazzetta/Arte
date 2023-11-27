@@ -114,5 +114,7 @@ def define_year_of_sale(lots):
 def drop_rows(lots):
     # lots = lots[lots['Price (BRL)'] > 0]
     lots = lots.reset_index(drop=True)
+    # drop rows with NaN value in year of sale column
+    lots = lots.dropna(subset=['Year of sale'])
 
     return lots
