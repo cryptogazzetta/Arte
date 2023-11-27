@@ -1,19 +1,23 @@
 from extractors import artsy_auctions as artsy_extract
+from preprocessing import artsy_auctions as artsy_preprocess
 
 ## ARTSY AUCTIONS
 
 link = 'https://www.artsy.net/auction-result/4370761'
 links_file_path = './temporary-files/artsy_auctions_artworks_links.csv'
 links_last_page_file_path = './temporary-files/artsy_auctions_last_page.csv'
-artworks_info_file_path = './temporary-files/OLD_artsy_auctions_artworks_info.csv'
+artworks_info_file_path = './temporary-files/artsy_auctions_artworks_info.csv'
 
 # Links
-# artists_names = ['marc-chagall', 'emiliano-di-cavalcanti', 'vicente-do-rego-monteiro']
+# artists_names = ['victor-vasarely']
 # for artist_name in artists_names:
 #     artsy_extract.get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_page_file_path)
     
 # Info
-artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
+# artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
+
+artsy_preprocess.preprocess(artworks_info_file_path, './clean-files/artsy_auctions_artworks_info.csv')
+
 
 ## CATALOGO DAS ARTES
 

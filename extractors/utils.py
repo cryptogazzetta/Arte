@@ -38,7 +38,7 @@ def explicit_wait(driver, search_key, by='xpath', timeout=10):
             EC.presence_of_element_located((By.TAG_NAME, search_key))
         )
 
-def safe_explicit_wait(driver, search_key, by='xpath', timeout=10):
+def safe_explicit_wait(driver, search_key, by='xpath', timeout=2):
     try:
         if by == 'xpath':    
             return WebDriverWait(driver, timeout).until(
@@ -121,10 +121,12 @@ def read_artworks_info(artworks_info_file_path):
     return artworks_info, existing_links
 
 def write_artworks_info(artworks_info_file_path, new_artworks_info):
-    artworks_info = pd.read_csv(artworks_info_file_path, names=['url', 'Artist'])
-    print('velho:', artworks_info.shape)
-    print('novo:', new_artworks_info.shape)
+    try:
+        existing_artworks_info = pd.read_csv(artworks_info_file_path)
+    except FileNotFoundError:
+        existing_artworks_info = pd.DataFrame(columns=['url'])
 
-    artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)], ignore_index=True)
-    artworks_info.to_csv(artworks_info_file_path, index=False)
+    new_artworks_info = pd.concat([existing_artworks_info, new_artworks_info], ignore_index=True)
+    new_artworks_info.to_csv(artworks_info_file_path, index=False)
+
 

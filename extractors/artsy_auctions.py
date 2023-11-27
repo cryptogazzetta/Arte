@@ -75,39 +75,47 @@ def get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_
 
     return new_links
 
+
 ## EXTRACTING INFO
 def get_artwork_info(driver, link):
     driver.get(link)
     print('got to link:', link)
 
-    artwork_info = pd.DataFrame()
-    artwork_info.loc[0, 'url'] = link
+    artwork_info = pd.Series()
+    artwork_info['url'] = link
 
-    img_url = utils.safe_explicit_wait(driver, '//div[@data-testid="artwork-lightbox-image"]/img')
-    price = utils.safe_explicit_wait(driver, '//div[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0  bUuBLd")]')
-    artist = utils.safe_explicit_wait(driver, '//a[contains(@class, "RouterLink__RouterAwareLink-sc-1nwbtp5-0 dikvRF")]')
-    title = utils.safe_explicit_wait(driver, '//h1[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0 OfSrA gyuZDD")]')
-    date = utils.safe_explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 Text-sc-18gcpao-0 fIDNCK kFGRHf"]')
+    # Dict of info with respective xpath and attribute to be extracted
+    info_dict = [{'info': 'img_url', 'xpath': '//div[@data-testid="artwork-lightbox-image"]/img', 'attribute': 'src'},
+                 {'info': 'Price', 'xpath': '//div[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0  bUuBLd")]', 'attribute': 'text'},
+                 {'info': 'Price_USD', 'xpath': '//div[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0 caIGcn egIqXp")]', 'attribute': 'text'},
+                 {'info': 'Artist_name', 'xpath': '//a[contains(@class, "RouterLink__RouterAwareLink-sc-1nwbtp5-0 dikvRF")]', 'attribute': 'text'},
+                 {'info': 'Artist_url', 'xpath': '//a[contains(@class, "RouterLink__RouterAwareLink-sc-1nwbtp5-0 dikvRF")]', 'attribute': 'href'},
+                 {'info': 'Title', 'xpath': '//h1[contains(@class, "Box-sc-15se88d-0 Text-sc-18gcpao-0 OfSrA gyuZDD")]', 'attribute': 'text'},
+                 {'info': 'Date', 'xpath': '//div[@class="Box-sc-15se88d-0 Text-sc-18gcpao-0 fIDNCK kFGRHf"]', 'attribute': 'text'}
+                ]
+
+    for info_item in info_dict: # Extract info from the artwork page
+        try:
+            if info_item['attribute'] == 'text':
+                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].text
+                artwork_info[info_item['info']] = artwork_info[info_item['info']].replace('\n', ' ')
+            elif info_item['attribute'] == 'src':
+                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].get_attribute('src')
+            elif info_item['attribute'] == 'href':
+                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].get_attribute('href')
+        except Exception as e:
+            print(e)
+            artwork_info[info_item['info']] = 'got error extracting info: ' + str(e)
+    
     table_rows = utils.safe_explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 giFrDh"]')
-
-    try:
-        artwork_info.loc[0, 'img_url'] = img_url[0].get_attribute('src')
-        artwork_info.loc[0, 'Price'] = price[0].text
-        artwork_info.loc[0, 'Artist_name'] = artist[0].text
-        artwork_info.loc[0, 'Artist_url'] = artist[0].get_attribute('href')
-        artwork_info.loc[0, 'Title'] = title[0].text
-        artwork_info.loc[0, 'Date'] = date[0].text
+    if table_rows: # Extract info from the info table in artwork page
         for row in table_rows:
             key = row.find_element(By.XPATH, './div[1]').text
             value = row.find_element(By.XPATH, './div[2]').text
-            artwork_info.loc[0, key] = value 
-    except Exception as e:
-        print(e)
-        artwork_info.loc[0, 'Error'] = 'got error extracting info: ' + str(e)
-        
+            artwork_info[key] = value
+
     return artwork_info
 
-## Tirar [:8] depois
 def get_all_artworks_info(links_file_path, artworks_info_file_path):
     # Get artworks links
     artworks_links = utils.read_links(links_file_path)
@@ -117,23 +125,17 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
     artworks_links = list(set(artworks_links) - set(existing_links))
     
     new_artworks_info = pd.DataFrame(columns=['url'])
-    batch_size = 3
+    batch_size = 50
 
     driver = authenticate('https://www.artsy.net/auctions', click_to_log=True)
 
-    for artwork_link in artworks_links[:8]:
+    for artwork_link in artworks_links:
         artwork_info = get_artwork_info(driver, artwork_link)
-        print('velho:', new_artworks_info.shape)
-        print('novo:', artwork_info.shape)
-
-        if new_artworks_info.empty:
-            new_artworks_info = artwork_info
-        else:
-            new_artworks_info = pd.concat([new_artworks_info, pd.DataFrame([artwork_info])], ignore_index=True)
+        new_artworks_info = pd.concat([new_artworks_info, pd.DataFrame([artwork_info])], ignore_index=True)
 
         if len(new_artworks_info) % batch_size == 0:
             utils.write_artworks_info(artworks_info_file_path, new_artworks_info)
-            new_artworks_info = []
+            new_artworks_info = pd.DataFrame(columns=['url'])
 
     if not new_artworks_info.empty:
         utils.write_artworks_info(artworks_info_file_path, new_artworks_info)

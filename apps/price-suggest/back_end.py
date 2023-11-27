@@ -29,14 +29,14 @@ def get_file_from_github(file_path, format='csv'):
 ## BACK END
 
 # Import files from github
-lots = pd.read_csv(get_file_from_github('analysis/models/catalogo_das_artes_lots.csv'))
+lots = pd.read_csv(get_file_from_github('clean-files/artsy_auctions_artworks_info.csv'))
 
-lots_x_test = pd.read_csv(get_file_from_github('analysis/models/catalogo_X_test.csv'))
-pricing_model = joblib.load(get_file_from_github('analysis/models/catalogo_gb_model.pkl', format='pkl'))
+lots_x_test = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))
+pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
 
 # provide lists of artists and techniques
 artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
-techniques_list = lots['Technique_fix'].unique().tolist()
+techniques_list = lots['Technique'].unique().tolist()
 techniques_list = [item.capitalize() for item in techniques_list]
 
 # Convert to string
@@ -68,7 +68,7 @@ def get_price_prediction(characteristics):
     # price_prediction = pricing_model.predict(input_df.to_numpy())[0]
 
     similar_lots = get_similar_lots(characteristics)
-    price_prediction = similar_lots['Price (BRL)'].median()
+    price_prediction = similar_lots['Price (USD)'].median()
 
     return price_prediction
 
@@ -80,7 +80,7 @@ def get_similar_lots(characteristics):
     # Filter by artist
     similar_lots = similar_lots[similar_lots['Artist'] == characteristics['Artist']]
     # Filter by technique
-    similar_lots = similar_lots[similar_lots['Technique_fix'] == characteristics['Technique']]
+    similar_lots = similar_lots[similar_lots['Technique'] == characteristics['Technique']]
     # Filter by size
     if characteristics['Height (cm)']:
         # Tolerance range for size
@@ -102,9 +102,9 @@ def get_similar_lots(characteristics):
 def get_similar_lots_performance(similar_lots):
 
     similar_lots_performance = similar_lots.groupby('Year of sale').agg(
-        Total_Sales=('Price (BRL)', 'sum'),
-        Mean_Price=('Price (BRL)', 'mean'),
-        Sales_Count=('Price (BRL)', 'count')
+        Total_Sales=('Price (USD)', 'sum'),
+        Mean_Price=('Price (USD)', 'mean'),
+        Sales_Count=('Price (USD)', 'count')
     ).reset_index()
 
     return similar_lots_performance
