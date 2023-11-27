@@ -67,6 +67,12 @@ def define_area(lots):
     lots['Area (cm²)'] = lots['Height (cm)'] * lots['Width (cm)']
     return lots
 
+def clean_and_convert_price(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
 def fix_price(lots):
 
     lots[['Price_fix', 'Price_unit']] = lots['Price'].str.extract(r'([\d,]+)\s*([^\d,.]+)?')
@@ -79,6 +85,8 @@ def fix_price(lots):
 
     lots['Price (USD)'] = pd.to_numeric(lots['Price_USD'].str.replace('[^\d.]', '', regex=True), errors='coerce')
     lots.loc[lots['Price_unit'] == 'US$', 'Price (USD)'] = lots['Price_fix']
+
+    lots['Price (USD)'] = lots['Price (USD)'].apply(lambda x: clean_and_convert_price(x))
 
     return lots
 
@@ -112,9 +120,7 @@ def define_year_of_sale(lots):
     return lots
 
 def drop_rows(lots):
-    # lots = lots[lots['Price (BRL)'] > 0]
-    lots = lots.reset_index(drop=True)
-    # drop rows with NaN value in year of sale column
-    lots = lots.dropna(subset=['Year of sale'])
+    # lots = lots.reset_index(drop=True)
+    lots = lots.dropna(subset=['Price (USD)', 'Year of sale'])
 
     return lots

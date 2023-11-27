@@ -35,7 +35,7 @@ lots_x_test = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_X
 pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
 
 # provide lists of artists and techniques
-artists_list = ['Candido Portinari', 'Marc Chagall', 'Victor Vasarely', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
+artists_list = ['Marc Chagall', 'Victor Vasarely', 'Candido Portinari', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
 techniques_list = ['Print', 'Painting', 'Drawing']
 
 # Convert to string
