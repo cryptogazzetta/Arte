@@ -104,4 +104,4 @@ if st.button('Gerar relatório'):
         st.pyplot(fig)
 
         # TABLE OF SIMILAR ARTWORKS AUCTIONED
-        st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (BRL)', 'Sold']], width=1000)
+        st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (USD)', 'Sold']], width=1000)

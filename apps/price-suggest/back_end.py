@@ -67,7 +67,7 @@ def get_price_prediction(characteristics):
     # price_prediction = pricing_model.predict(input_df.to_numpy())[0]
 
     similar_lots = get_similar_lots(characteristics)
-    price_prediction = similar_lots['Price (USD)'].median()
+    price_prediction = 1000 # similar_lots['Price (USD)'].median()
 
     return price_prediction
 
@@ -94,7 +94,7 @@ def get_similar_lots(characteristics):
     similar_lots.fillna('', inplace=True)
 
     similar_lots.set_index('Year of sale', inplace=True)
-    # similar_lots.sort_index(inplace=True, ascending=False)
+    similar_lots.sort_index(inplace=True, ascending=False)
 
     return similar_lots
 
@@ -110,7 +110,7 @@ def get_similar_lots_performance(similar_lots):
 
 def save_lead(email, characteristics):
     # save to csv
-    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Technique'])
+    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Technique', 'url'])
     lead.loc[0, 'Email'] = email
     lead.loc[0, 'Artist'] = characteristics['Artist']
     lead.loc[0, 'Height (cm)'] = characteristics['Height (cm)']
