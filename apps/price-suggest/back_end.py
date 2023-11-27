@@ -104,8 +104,7 @@ def get_similar_lots_performance(similar_lots):
         Total_Sales=('Price (USD)', 'sum'),
         Mean_Price=('Price (USD)', 'mean'),
         Sales_Count=('Price (USD)', 'count'),
-        # include Price (USD/m): ('Price (USD)', 'mean')/('Height (cm)'+('Width (cm)'/100))
-        Price_m=('Price (USD)', 'mean')/('Height (cm)'+('Width (cm)'/100))
+        Price_m=('Price (USD / cm)', 'mean')
     ).reset_index()
 
     return similar_lots_performance
