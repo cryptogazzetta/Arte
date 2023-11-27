@@ -88,6 +88,9 @@ def fix_price(lots):
 
     lots['Price (USD)'] = lots['Price (USD)'].apply(lambda x: clean_and_convert_price(x))
 
+    lots['Price (USD / cm²)'] = lots['Price (USD)'] / lots['Area (cm²)']
+    lots['Price (USD / cm)'] = lots['Price (USD)'] / (lots['Height (cm)'] + lots['Width (cm)'])
+
     return lots
 
 techniques_dict = {

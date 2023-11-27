@@ -62,11 +62,11 @@ email = st.text_input('E-mail', label_visibility="collapsed")
 
 if st.button('Gerar relatório'):
 
-    if not ('@' in email and '.' in email):
-        st.error('Por favor, insira um e-mail válido')
-        st.stop()
-    else:
-        pass
+    # if not ('@' in email and '.' in email):
+    #     st.error('Por favor, insira um e-mail válido')
+    #     st.stop()
+    # else:
+    #     pass
 
     characteristics = {'Artist': artist, 'Height (cm)': height, 'Width (cm)': width, 'Technique': technique.lower()}
 
