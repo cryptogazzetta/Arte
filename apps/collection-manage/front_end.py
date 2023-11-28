@@ -9,6 +9,7 @@ import chart
 ## PAGE CONFIG
 st.set_page_config(
     page_title="Marte - Gestão de coleção",
+    page_icon=":🎨:",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
