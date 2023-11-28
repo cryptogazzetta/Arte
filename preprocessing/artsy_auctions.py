@@ -3,7 +3,7 @@ import re
 
 
 def preprocess(raw_info_path, clean_info_path):
-    lots = pd.read_csv(raw_info_path)
+    lots = pd.read_csv(raw_info_path, on_bad_lines='skip')
 
     lots = rename_columns(lots)
     lots = fix_dimensions(lots)

@@ -1,22 +1,23 @@
+# External Modules
 import streamlit as st
 import matplotlib.pyplot as plt
-
+import pandas as pd
+# Project Modules
 import back_end
 import chart
 
 ## PAGE CONFIG
 st.set_page_config(
     page_title="Marte - Gestão de coleção",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 ## BACK END
 collection = back_end.get_collection()
-
-st.dataframe(collection)
-
-collection = back_end.get_price_prediction(collection)
+collection_performance = back_end.get_collection_performance(collection)
+collection = back_end.get_price_prediction(collection, collection_performance)
+performance_stats = back_end.get_performance_stats(collection_performance)
 
 
 ## Define CSS
@@ -31,10 +32,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.dataframe(collection)
+st.markdown('<h1>Performance da coleção</h1>', unsafe_allow_html=True)
 
+col1, col2 = st.columns([0.7, 0.3])
+with col1:
+    fig = chart.get_line_chart(collection_performance['Total'])
+    st.pyplot(fig)
+with col2:
+    st.dataframe(performance_stats, width=300)
 
-
+st.markdown('<h1>Obras da coleção</h1>', unsafe_allow_html=True)
+st.dataframe(back_end.fix_collection_to_show(collection), width=1000)
 
 
 

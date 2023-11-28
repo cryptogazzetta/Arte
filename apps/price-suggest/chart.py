@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 
 def get_similar_lots_performance_chart(similar_lots_performance):
     fig, ax1 = plt.subplots(figsize=(10, 5))

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 def get_donut_chart(data):
     # Create a donut chart with a custom color scheme
@@ -18,4 +19,34 @@ def get_donut_chart(data):
     for text in texts + autotexts:
         text.set_color('black')
     
+    return fig
+
+def get_line_chart(data):
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # index as int
+    data.index = data.index.astype(int)
+    
+    ax.set_ylabel('Portfolio Value')
+    ax.plot(data, color='white', label='Portfolio Value (USD)', linewidth=2)
+    ax.set_title('Performance da carteira')
+
+    ax.set_ylim(bottom=0)
+
+    ax.xaxis.label.set_color('white')
+    ax.tick_params(axis='x', colors='white')
+    
+    # Set the y-axis color to white
+    ax.yaxis.label.set_color('white')
+    ax.tick_params(axis='y', colors='white')
+
+    formatter = ticker.StrMethodFormatter('US${x:,.0f}')
+    ax.yaxis.set_major_formatter(formatter)
+
+    # Set black background
+    fig.patch.set_facecolor('black')
+    ax.set_facecolor('black')
+
+    ax.legend().set_visible(False)
+
     return fig
