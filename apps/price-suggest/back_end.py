@@ -35,7 +35,7 @@ lots_x_test = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_X
 pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
 
 # provide lists of artists and techniques
-artists_list = ['Marc Chagall', 'Victor Vasarely', 'Candido Portinari', 'Vicente do Rego Monteiro', 'Di Cavalcanti']
+artists_list = ['Marc Chagall', 'Victor Vasarely']
 techniques_list = ['Print', 'Painting', 'Drawing']
 
 # Convert to string
@@ -67,7 +67,7 @@ def get_price_prediction(characteristics):
     # price_prediction = pricing_model.predict(input_df.to_numpy())[0]
 
     similar_lots = get_similar_lots(characteristics)
-    price_prediction = 1000 # similar_lots['Price (USD)'].median()
+    price_prediction = similar_lots['Price (USD)'].median()
 
     return price_prediction
 

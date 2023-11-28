@@ -28,12 +28,8 @@ def get_file_from_github(file_path, format='csv'):
 lots = pd.read_csv(get_file_from_github('clean-files/artsy_auctions_artworks_info.csv'))
 artists_indices = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_artists_indices.csv'))
 artists_indices.set_index('Year of sale', inplace=True)
-
 lots_x_test = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))
 pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
-
-
-
 
 
 ## UTILS
