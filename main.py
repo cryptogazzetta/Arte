@@ -8,15 +8,16 @@ links_file_path = './temporary-files/artsy_auctions_artworks_links.csv'
 links_last_page_file_path = './temporary-files/artsy_auctions_last_page.csv'
 artworks_info_file_path = './temporary-files/artsy_auctions_artworks_info.csv'
 
-# Links
+# Extract Links
 # artists_names = ['victor-vasarely']
 # for artist_name in artists_names:
 #     artsy_extract.get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_page_file_path)
     
-# Info
-# artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
+# Extract Info
+artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
 
-artsy_preprocess.preprocess(artworks_info_file_path, './clean-files/artsy_auctions_artworks_info.csv')
+# Preprocess Info
+# artsy_preprocess.preprocess(artworks_info_file_path, './clean-files/artsy_auctions_artworks_info.csv')
 
 
 ## CATALOGO DAS ARTES

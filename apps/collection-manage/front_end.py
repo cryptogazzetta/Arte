@@ -12,8 +12,11 @@ st.set_page_config(
 )
 
 ## BACK END
-collection = back_end.get_data()
-collection = back_end.preprocess_data(collection)
+collection = back_end.get_collection()
+
+st.dataframe(collection)
+
+collection = back_end.get_price_prediction(collection)
 
 
 ## Define CSS
@@ -28,35 +31,45 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# User options
-filter_by_options = ['Artista', 'Técnica']
-filter_by = st.selectbox('Filtrar por', filter_by_options, index=0)
-
-compare_by_options = ['Quantidade', 'Valor']
-compare_by = st.selectbox('Comparar por', compare_by_options, index=0)
-
-# Filter data
-if compare_by == 'Quantidade':
-    if filter_by == 'Artista':
-        data = collection.groupby(collection.index)['Price Prediction'].count()
-
-    elif filter_by == 'Técnica':
-        data = collection.groupby('Technique_fix')['Price Prediction'].count()
-
-elif compare_by == 'Valor':
-    if filter_by == 'Artista':
-        data = collection.groupby(collection.index)['Price Prediction'].sum()
-
-    elif filter_by == 'Técnica':
-        data = collection.groupby('Technique_fix')['Price Prediction'].sum()
-
-
-# Display data
-fig = chart.get_donut_chart(data)
-
-# Display the plot using streamlit
-st.pyplot(fig)
-
-
 st.dataframe(collection)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # User options
+# filter_by_options = ['Artista', 'Técnica']
+# filter_by = st.selectbox('Filtrar por', filter_by_options, index=0)
+
+# compare_by_options = ['Quantidade', 'Valor']
+# compare_by = st.selectbox('Comparar por', compare_by_options, index=0)
+
+# # Filter data
+# if compare_by == 'Quantidade':
+#     if filter_by == 'Artista':
+#         data = collection.groupby(collection.index)['Year'].count()
+
+#     elif filter_by == 'Técnica':
+#         data = collection.groupby('Technique')['Year'].count()
+
+# elif compare_by == 'Valor':
+#     if filter_by == 'Artista':
+#         data = collection.groupby(collection.index)['Price Prediction'].sum()
+
+#     elif filter_by == 'Técnica':
+#         data = collection.groupby('Technique')['Price Prediction'].sum()
+
+
+# # Display data
+# fig = chart.get_donut_chart(data)
+
+# # Display the plot using streamlit
+# st.pyplot(fig)

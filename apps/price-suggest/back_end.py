@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 from io import StringIO, BytesIO
-# Project Modules
 
 
 ## UTILS
@@ -25,6 +24,7 @@ def get_file_from_github(file_path, format='csv'):
         return file_content
     else:
         print(f"Failed to fetch the file. Status code: {response.status_code}")
+
 
 ## BACK END
 
