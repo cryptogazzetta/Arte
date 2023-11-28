@@ -9,7 +9,7 @@ def preprocess(raw_info_path, clean_info_path):
     lots = fix_dimensions(lots)
     lots = define_area(lots)
     lots = fix_price(lots)
-    lots = define_technique(lots)
+    lots = define_medium_types(lots)
     lots = define_sold(lots)
     lots = define_year(lots)
     lots = define_year_of_sale(lots)
@@ -93,18 +93,24 @@ def fix_price(lots):
 
     return lots
 
-techniques_dict = {
+medium_types_dict = {
     'painting': ['oil', 'acrylic', 'watercolor', 'gouache', 'tempera', 'pastel', 'ink', 'mixed media', 'enamel', 'spray paint', 'painting'],
-    'drawing': ['pencil', 'charcoal', 'pastel', 'ink', 'mixed media', 'crayon', 'graphite', 'chalk', 'drawing'],
+    'drawing': ['pencil', 'charcoal', 'pastel', 'ink', 'mixed media', 'crayon', 'graphite', 'chalk', 'drawing', 'works on paper'],
     'print': ['etching', 'lithograph', 'screenprint', 'woodcut', 'aquatint', 'engraving', 'drypoint', 'mezzotint', 'monotype', 'monoprint', 'linocut', 'serigraph', 'print', 'printmaking'],
 }
 
-def define_technique(lots):
-    lots['Technique'] = lots['Medium'].str.lower()
-    lots['Technique'].fillna(' ', inplace=True)
+def define_medium_types(lots):
+    medium_column = lots['Medium']
 
-    for technique in techniques_dict.keys():
-        lots.loc[lots['Technique'].str.contains('|'.join(techniques_dict[technique])), 'Technique'] = technique
+    lots['Medium'] = lots['Medium'].str.lower()
+
+    lots['Medium_type'] = 'other'
+
+    lots['Medium'].fillna(' ', inplace=True)
+    for medium_type in medium_types_dict.keys():
+        lots.loc[lots['Medium'].str.contains('|'.join(medium_types_dict[medium_type])), 'Medium_type'] = medium_type
+
+    lots['Medium'] = medium_column
     return lots
 
 def define_sold(lots):

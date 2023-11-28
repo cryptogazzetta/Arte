@@ -34,16 +34,9 @@ lots = pd.read_csv(get_file_from_github('clean-files/artsy_auctions_artworks_inf
 lots_x_test = pd.read_csv(get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))
 pricing_model = joblib.load(get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
 
-# provide lists of artists and techniques
+# provide lists of artists and Medium_types
 artists_list = ['Marc Chagall', 'Victor Vasarely']
-techniques_list = ['Print', 'Painting', 'Drawing']
-
-# Convert to string
-artists_list = [str(artist) for artist in artists_list]
-techniques_list = [str(technique) for technique in techniques_list]
-# Sort lists
-artists_list.sort()
-techniques_list.sort()
+medium_types_list = ['Painting', 'Drawing', 'Print']
 
 def get_input_dummies(characteristics):
     input_dummies = pd.DataFrame(columns=lots_x_test.columns)
@@ -53,8 +46,8 @@ def get_input_dummies(characteristics):
     input_dummies.loc[0, 'Width (cm)'] = characteristics['Width (cm)']
     if 'Artist_'+characteristics['Artist'] in lots.columns:
         input_dummies.loc[0, characteristics['Artist']] = True
-    if 'Technique_'+characteristics['Technique'] in lots.columns:
-        input_dummies.loc[0, characteristics['Technique']] = True
+    if 'Medium_type_'+characteristics['Medium_type'] in lots.columns:
+        input_dummies.loc[0, characteristics['Medium_type']] = True
     # By default, year of sale is 2023
     input_dummies.loc[0, 'Year of sale'] = 2023
     # Fill NaNs with False
@@ -75,11 +68,15 @@ def get_similar_lots(characteristics):
     similar_lots = lots.copy()
 
     similar_lots.index = similar_lots.index.map(lambda x: f'{x:,.0f}')
+
+
+    print(similar_lots.columns)
+    print(characteristics)
     
     # Filter by artist
     similar_lots = similar_lots[similar_lots['Artist'] == characteristics['Artist']]
-    # Filter by technique
-    similar_lots = similar_lots[similar_lots['Technique'] == characteristics['Technique']]
+    # Filter by Medium_type
+    similar_lots = similar_lots[similar_lots['Medium_type'] == characteristics['Medium_type']]
     # Filter by size
     if characteristics['Height (cm)']:
         # Tolerance range for size
@@ -111,10 +108,10 @@ def get_similar_lots_performance(similar_lots):
 
 def save_lead(email, characteristics):
     # save to csv
-    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Technique', 'url'])
+    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Medium_type', 'url'])
     lead.loc[0, 'Email'] = email
     lead.loc[0, 'Artist'] = characteristics['Artist']
     lead.loc[0, 'Height (cm)'] = characteristics['Height (cm)']
     lead.loc[0, 'Width (cm)'] = characteristics['Width (cm)']
-    lead.loc[0, 'Technique'] = characteristics['Technique']
+    lead.loc[0, 'Medium_type'] = characteristics['Medium_type']
     lead.to_csv('./lead_base.csv', mode='a', header=False, index=False)

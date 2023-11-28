@@ -26,9 +26,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Get lists of artists and techniques
+# Get lists of artists and Medium_types
 artists_list = ['Marc Chagall', 'Victor Vasarely']
-techniques_list = ['Painting', 'Drawing', 'Print']
+medium_types_list = ['Painting', 'Drawing', 'Print']
 
 #### USER INPUTS
 
@@ -36,11 +36,11 @@ techniques_list = ['Painting', 'Drawing', 'Print']
 st.markdown('<h2>Artista</h2>', unsafe_allow_html=True)
 artist = st.selectbox('Artista', artists_list, label_visibility="collapsed", index=0)
 
-# Technique and Year
+# Medium_type and Year
 col1, col2 = st.columns(2)
 with col1:
     st.markdown('<h2>Técnica</h2>', unsafe_allow_html=True)
-    technique = st.selectbox('Técnica', techniques_list, label_visibility="collapsed") 
+    medium_type = st.selectbox('Técnica', medium_types_list, label_visibility="collapsed") 
 with col2:
     st.markdown('<h2>Ano</h2>', unsafe_allow_html=True)
     year = st.selectbox('Ano', [''] + list(range(1900, 2023)), label_visibility="collapsed")
@@ -68,10 +68,10 @@ if st.button('Gerar relatório'):
     # else:
     #     pass
 
-    characteristics = {'Artist': artist, 'Height (cm)': height, 'Width (cm)': width, 'Technique': technique.lower()}
+    characteristics = {'Artist': artist, 'Height (cm)': height, 'Width (cm)': width, 'Medium_type': medium_type.lower()}
 
     artist = characteristics['Artist']
-    technique = characteristics['Technique']
+    medium_type = characteristics['Medium_type']
 
     ## INTERACT WITH BACK-END
     back_end.save_lead(email, characteristics)
@@ -88,13 +88,15 @@ if st.button('Gerar relatório'):
     st.divider()
 
     # SHOW PRICE SUGGESTION    
-    st.markdown(f'<h1>{technique.capitalize()} por {artist}, {height}x{width}</h1>', unsafe_allow_html=True)
+    st.markdown(f'<h1>{medium_type.capitalize()} por {artist}, {height}x{width}</h1>', unsafe_allow_html=True)
     if no_similar_lots:
         st.markdown(f'<p>Não encontramos obras similares no histórico de leilões.</p>', unsafe_allow_html=True)
     else:
         st.markdown(f'<p>{similar_lots.shape[0]} obras similares foram encontradas no histórico.</p>', unsafe_allow_html=True)
         # Show price suggestion if all inputs are filled
-        st.markdown(f'<p>Preço sugerido: R${price_prediction}</p>', unsafe_allow_html=True)
+        # format price_prediction separating thousands with commas
+        price_prediction = f'{price_prediction:,.0f}'
+        st.markdown(f'<p>Preço sugerido: US$ {price_prediction}</p>', unsafe_allow_html=True)
 
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
@@ -104,4 +106,4 @@ if st.button('Gerar relatório'):
         st.pyplot(fig)
 
         # TABLE OF SIMILAR ARTWORKS AUCTIONED
-        st.dataframe(similar_lots[['Technique', 'Height (cm)', 'Width (cm)', 'Price (USD)', 'url']], width=1000)
+        st.dataframe(similar_lots[['Medium_type', 'Height (cm)', 'Width (cm)', 'Price (USD)', 'url']], width=1000)

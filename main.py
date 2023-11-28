@@ -14,10 +14,10 @@ artworks_info_file_path = './temporary-files/artsy_auctions_artworks_info.csv'
 #     artsy_extract.get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_page_file_path)
     
 # Extract Info
-artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
+# artsy_extract.get_all_artworks_info(links_file_path, artworks_info_file_path)
 
 # Preprocess Info
-# artsy_preprocess.preprocess(artworks_info_file_path, './clean-files/artsy_auctions_artworks_info.csv')
+artsy_preprocess.preprocess(artworks_info_file_path, './clean-files/artsy_auctions_artworks_info.csv')
 
 
 ## CATALOGO DAS ARTES

@@ -44,7 +44,7 @@ with col2:
     st.dataframe(performance_stats, width=300)
 
 st.markdown('<h1>Obras da coleção</h1>', unsafe_allow_html=True)
-st.dataframe(back_end.fix_collection_to_show(collection), width=1000)
+st.dataframe(back_end.fix_collection_to_show(collection), width=2000)
 
 
 

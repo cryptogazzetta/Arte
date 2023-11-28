@@ -55,12 +55,12 @@ def get_file_from_github(file_path, format='csv'):
 ## BACK END
 def get_collection():
     collection = lots[5003:5010]
-    collection = collection[['Artist', 'Technique', 'Price (USD)', 'Height (cm)', 'Width (cm)', 'Year of sale', 'Year']]
+    collection = collection[['Artist', 'Medium_type', 'Price (USD)', 'Height (cm)', 'Width (cm)', 'Year of sale', 'Year']]
     collection.rename(columns={'Price (USD)': 'Buying Price', 'Year of sale': 'Buying Date'}, inplace=True)
     return collection
 
 def get_input_dummies(collection):
-    input_dummies = pd.get_dummies(collection.drop(columns=['Buying Date', 'Buying Price']), columns=['Artist', 'Technique'], drop_first=True)
+    input_dummies = pd.get_dummies(collection.drop(columns=['Buying Date', 'Buying Price']), columns=['Artist', 'Medium_type'], drop_first=True)
     
     # add columns height, width, year
     input_dummies['Height (cm)'] = collection['Height (cm)']
@@ -137,13 +137,16 @@ def get_performance_stats(collection_performance):
     sharpe_ratio = annualized_return / volatility
 
     # Assign values to the performance_stats DataFrame
-    performance_stats.loc['Return', 'Total'] = total_return
-    performance_stats.loc['Annualized Return', 'Total'] = annualized_return
-    performance_stats.loc['Volatility', 'Total'] = volatility
-    performance_stats.loc['Sharpe Ratio', 'Total'] = sharpe_ratio
+    performance_stats.loc['Return', 'Total'] = total_return * 100
+    performance_stats.loc['Annualized Return', 'Total'] = annualized_return * 100
+    performance_stats.loc['Volatility', 'Total'] = volatility * 100
+    performance_stats.loc['Sharpe Ratio', 'Total'] = sharpe_ratio * 100
 
     # first three rows as percentage
     performance_stats.iloc[:3] = performance_stats.iloc[:3].round(2)
+
+    # rename 'Total' to 'Stats (%)'
+    performance_stats.rename(columns={'Total': 'Stats (%)'}, inplace=True)
 
     return performance_stats
 
@@ -159,9 +162,10 @@ def fix_collection_to_show(collection):
     collection_to_show['Measures'] = collection_to_show['Height (cm)'].astype(str) + ' x ' + collection_to_show['Width (cm)'].astype(str)
 
     # change column order
-    collection_to_show = collection_to_show[['Artist', 'Technique', 'Measures', 'Year', 'Buying Date', 'Buying Price', 'Price Prediction']]
-    collection_to_show.rename(columns={'Price Prediction': 'Current Price Estimate'}, inplace=True)
-    collection_to_show.set_index('Artist', inplace=True)
+    collection_to_show = collection_to_show[['Artist', 'Medium_type', 'Measures', 'Year', 'Buying Date', 'Buying Price', 'Price Prediction']]
+    # translate columns
+    collection_to_show.rename(columns={'Artist':'Artista', 'Medium_type':'Suporte', 'Year':'Ano', 'Buying Date':'Data da compra', 'Buying Price':'Preço de compra', 'Price Prediction':'Preço atual estimado', 'Measures': 'Medidas'}, inplace=True)
+    collection_to_show.set_index('Artista', inplace=True)
 
     return collection_to_show
     
