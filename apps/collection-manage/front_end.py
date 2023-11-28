@@ -14,6 +14,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+
 ## BACK END
 collection = back_end.get_collection()
 collection_performance = back_end.get_collection_performance(collection)
