@@ -27,8 +27,8 @@ st.markdown(
 )
 
 # Get lists of artists and techniques
-artists_list = back_end.artists_list
-techniques_list = back_end.techniques_list
+artists_list = ['Marc Chagall', 'Victor Vasarely']
+techniques_list = ['Painting', 'Drawing', 'Print']
 
 #### USER INPUTS
 
