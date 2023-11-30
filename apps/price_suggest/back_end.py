@@ -27,7 +27,9 @@ def get_input_dummies(characteristics):
         input_dummies.loc[0, characteristics['Artist']] = True
     if 'Medium_type_'+characteristics['Medium_type'] in lots.columns:
         input_dummies.loc[0, characteristics['Medium_type']] = True
-    input_dummies.loc[0, 'Year'] = characteristics['Year']
+    
+    if characteristics['Year'] != '':
+        input_dummies.loc[0, 'Year'] = characteristics['Year']
     # By default, year of sale is 2023
     input_dummies.loc[0, 'Year of sale'] = 2023
     # Fill NaNs with False
@@ -37,6 +39,7 @@ def get_input_dummies(characteristics):
 
 def get_price_prediction(characteristics):
     input_df = get_input_dummies(characteristics)
+    print(input_df.head())
     price_prediction = pricing_model.predict(input_df.to_numpy())[0]
 
     # similar_lots = get_similar_lots(characteristics)
