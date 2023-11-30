@@ -16,7 +16,7 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    css = github.get_file_from_github('apps/price-suggest/styles.css', format='css')
+    css = github.get_file_from_github('apps/price_suggest/styles.css', format='css')
 
     st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
