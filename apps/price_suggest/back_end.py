@@ -36,11 +36,11 @@ def get_input_dummies(characteristics):
     return input_dummies
 
 def get_price_prediction(characteristics):
-    # input_df = get_input_dummies(characteristics)
-    # price_prediction = pricing_model.predict(input_df.to_numpy())[0]
+    input_df = get_input_dummies(characteristics)
+    price_prediction = pricing_model.predict(input_df.to_numpy())[0]
 
-    similar_lots = get_similar_lots(characteristics)
-    price_prediction = similar_lots['Price (USD)'].median()
+    # similar_lots = get_similar_lots(characteristics)
+    # price_prediction = similar_lots['Price (USD)'].median()
 
     return price_prediction
 
@@ -91,5 +91,5 @@ def save_lead(email, characteristics):
     lead.loc[0, 'Medium_type'] = characteristics['Medium_type']
     lead.to_csv('./lead_base.csv', mode='a', header=False, index=False)
     # save to postgres
-    postgres.create_user(email, str(characteristics))
+    # postgres.create_user(email, str(characteristics))
     
