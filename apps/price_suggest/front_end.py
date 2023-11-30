@@ -27,12 +27,21 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Get lists of artists and Medium_types
-    artists_list = ['Marc Chagall', 'Victor Vasarely']
-    medium_types_list = ['Painting', 'Drawing', 'Print']
+    ## Lists of artists and Medium_types
+    artists_list = back_end.artists_list
+    medium_types_list = back_end.medium_types_list
 
-    #### USER INPUTS
+    #### USER INPUT
+    email, artist, medium_type, year, height, width = get_user_input(artists_list, medium_types_list)
 
+    #### OUTPUTS
+
+    if st.button('Gerar relatório'):
+        check_email(email)
+        get_report(email, artist, medium_type, year, height, width)
+
+
+def get_user_input(artists_list, medium_types_list):
     # Artist
     st.markdown('<h2>Artista</h2>', unsafe_allow_html=True)
     artist = st.selectbox('Artista', artists_list, label_visibility="collapsed", index=0)
@@ -59,40 +68,25 @@ def main():
     st.markdown('<h2>Seu e-mail</h2>', unsafe_allow_html=True)
     email = st.text_input('E-mail', label_visibility="collapsed")
 
-    #### OUTPUTS
-
-    if st.button('Gerar relatório'):
-        get_report(email, artist, medium_type, year, height, width)
-
+    return email, artist, medium_type, year, height, width
 
 def get_report(email, artist, medium_type, year, height, width):
-# if not ('@' in email and '.' in email):
-    #     st.error('Por favor, insira um e-mail válido')
-    #     st.stop()
-    # else:
-    #     pass
 
+    ## ARWORK CHARACTERISTICS DICT
     characteristics = {'Artist': artist, 'Year': year, 'Height (cm)': height, 'Width (cm)': width, 'Medium_type': medium_type.lower()}
-
     artist = characteristics['Artist']
     medium_type = characteristics['Medium_type']
 
     ## INTERACT WITH BACK-END
-    back_end.save_lead(email, characteristics)
-    price_prediction = back_end.get_price_prediction(characteristics)
-    similar_lots = back_end.get_similar_lots(characteristics)
-    similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
-
-    if similar_lots.shape[0] == 0:
-        no_similar_lots = True
-    else:
-        no_similar_lots = False
-
+    price_prediction, similar_lots, similar_lots_performance = get_data(email, characteristics)
+    
 
     st.divider()
 
+
     # SHOW PRICE SUGGESTION    
     st.markdown(f'<h1>{medium_type.capitalize()} por {artist}, {height}x{width}</h1>', unsafe_allow_html=True)
+    no_similar_lots = check_similar_lots(similar_lots)
     if no_similar_lots:
         st.markdown(f'<p>Não encontramos obras similares no histórico de leilões.</p>', unsafe_allow_html=True)
     else:
@@ -111,3 +105,24 @@ def get_report(email, artist, medium_type, year, height, width):
 
         # TABLE OF SIMILAR ARTWORKS AUCTIONED
         st.dataframe(similar_lots[['Medium', 'Height (cm)', 'Width (cm)', 'Price (USD)', 'url']], width=1000)
+
+def check_email(email):
+    if not ('@' in email and '.' in email):
+        st.error('Por favor, insira um e-mail válido')
+        st.stop()
+    else:
+        pass
+
+def check_similar_lots(similar_lots):
+        if similar_lots.shape[0] == 0:
+            no_similar_lots = True
+        else:
+            no_similar_lots = False
+        return no_similar_lots
+
+def get_data(email, characteristics):
+    back_end.save_lead(email, characteristics)
+    price_prediction = back_end.get_price_prediction(characteristics)
+    similar_lots = back_end.get_similar_lots(characteristics)
+    similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
+    return price_prediction, similar_lots, similar_lots_performance

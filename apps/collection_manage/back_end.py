@@ -168,4 +168,24 @@ def fix_collection_to_show(collection):
     collection_to_show.set_index('Artista', inplace=True)
 
     return collection_to_show
-    
+
+def get_value_by_artist(collection):
+    artists = collection.index.unique()
+    artists_value = pd.DataFrame(index=artists, columns=['Value'])
+    for artist in artists:
+        artworks_by_artist = collection.loc[collection['Artist'] == artist]
+        artists_value.loc[artist, 'Value'] = artworks_by_artist['Price Prediction'].sum()
+    artists_value.sort_values(by='Value', ascending=False, inplace=True)
+
+    print(artists_value)
+    return artists_value
+
+def get_value_by_medium(collection):
+    print(collection.columns)
+    mediums = collection['Medium_type'].unique()
+    print(mediums)
+    mediums_value = pd.DataFrame(index=mediums, columns=['Value'])
+    for medium in mediums:
+        mediums_value.loc[medium, 'Value'] = collection.loc[collection['Medium_type'] == medium, 'Price Prediction'].sum()
+    mediums_value.sort_values(by='Value', ascending=False, inplace=True)
+    return mediums_value

@@ -11,7 +11,7 @@ import github
 # Import files from github
 lots = pd.read_csv(github.get_file_from_github('clean-files/artsy_auctions_artworks_info.csv'))
 lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))
-pricing_model = joblib.load(github.get_file_from_github('analysis/models/artsy_auctions_gb_model.pkl', format='pkl'))
+pricing_model = joblib.load(github.get_file_from_github('analysis/models/artsy_auctions_rf_model.pkl', format='pkl'))
 
 # provide lists of artists and Medium_types
 artists_list = ['Marc Chagall', 'Victor Vasarely']

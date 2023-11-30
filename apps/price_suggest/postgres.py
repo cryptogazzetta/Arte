@@ -2,6 +2,7 @@ import psycopg2
 import sys
 import constants
 
+## CONNECTION
 db_params = constants.db_params
 
 def create_connection():
@@ -21,7 +22,7 @@ def close_connection(connection, cursor):
     cursor.close()
     connection.close()
 
-## QUERIES
+## USER CRUD
 def create_user(email, artwork_info):
     connection = create_connection()
     cursor = connection.cursor()
