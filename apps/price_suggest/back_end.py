@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import requests
 from io import StringIO, BytesIO
 
-import postgres
+# import postgres
 import github
 
 # Import files from github
