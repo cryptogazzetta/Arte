@@ -15,6 +15,9 @@ data-files
 charts
 .devcontainer
 
+# Streamlit secrets file
+secrets.toml
+
 # Models
 #*.pkl
 

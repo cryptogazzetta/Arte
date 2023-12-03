@@ -1,11 +1,8 @@
 # External Modules
 import joblib
 import pandas as pd
-import matplotlib.pyplot as plt
-import requests
-from io import StringIO, BytesIO
-
-# import postgres
+# Project Modules
+import postgres
 import github
 
 # Import files from github
@@ -39,12 +36,7 @@ def get_input_dummies(characteristics):
 
 def get_price_prediction(characteristics):
     input_df = get_input_dummies(characteristics)
-    print(input_df.head())
     price_prediction = pricing_model.predict(input_df.to_numpy())[0]
-
-    # similar_lots = get_similar_lots(characteristics)
-    # price_prediction = similar_lots['Price (USD)'].median()
-
     return price_prediction
 
 def get_similar_lots(characteristics):
@@ -85,14 +77,13 @@ def get_similar_lots_performance(similar_lots):
     return similar_lots_performance
 
 def save_lead(email, characteristics):
-    # save to csv
-    lead = pd.DataFrame(columns=['Email', 'Artist', 'Height (cm)', 'Width (cm)', 'Medium_type', 'url'])
-    lead.loc[0, 'Email'] = email
-    lead.loc[0, 'Artist'] = characteristics['Artist']
-    lead.loc[0, 'Height (cm)'] = characteristics['Height (cm)']
-    lead.loc[0, 'Width (cm)'] = characteristics['Width (cm)']
-    lead.loc[0, 'Medium_type'] = characteristics['Medium_type']
-    lead.to_csv('./lead_base.csv', mode='a', header=False, index=False)
-    # save to postgres
-    # postgres.create_user(email, str(characteristics))
+    artist = characteristics['Artist']
+    medium_type = characteristics['Medium_type']
+    height = characteristics['Height (cm)']
+    width = characteristics['Width (cm)']
+    if characteristics['Year'] != '':
+        year = characteristics['Year']
+    else:
+        year = 'NULL'
+    postgres.create_consultation(email, artist, medium_type, height, width, year)
     

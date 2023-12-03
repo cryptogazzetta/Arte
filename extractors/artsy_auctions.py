@@ -58,7 +58,7 @@ def get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_
 
     driver = authenticate(base_url+str(last_page_scraped), click_to_log=True)
 
-    while True: # TROCAR PARA while True
+    while True:
         new_links = get_artworks_links_from_page(driver, base_url, last_page_scraped)
 
         try: # Go to next page

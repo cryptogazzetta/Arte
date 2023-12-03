@@ -7,14 +7,8 @@ import github
 import chart
 
 def main():
-    st.set_option('deprecation.showPyplotGlobalUse', False)
 
-    st.set_page_config(
-        page_title="Marte - Precificação de arte",
-        page_icon=":💲:",
-        layout="centered",
-        initial_sidebar_state="collapsed"
-    )
+    st.set_option('deprecation.showPyplotGlobalUse', False)
 
     css = github.get_file_from_github('apps/price_suggest/styles.css', format='css')
 
@@ -120,9 +114,11 @@ def check_similar_lots(similar_lots):
             no_similar_lots = False
         return no_similar_lots
 
+
 def get_data(email, characteristics):
     back_end.save_lead(email, characteristics)
     price_prediction = back_end.get_price_prediction(characteristics)
     similar_lots = back_end.get_similar_lots(characteristics)
     similar_lots_performance = back_end.get_similar_lots_performance(similar_lots)
     return price_prediction, similar_lots, similar_lots_performance
+

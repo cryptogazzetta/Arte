@@ -3,10 +3,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import pandas as pd
+import logging
 # Project Modules
 from utils import csv_handle
 from extractors import utils
-from infra import gcp
 
 
 ## UTILS
@@ -17,7 +17,7 @@ def authenticate():
     login_url = 'https://www.catalogodasartes.com.br/acesso/'
     
     chrome_options = Options()
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.binary_location = '/opt/google/chrome'
 
     # Instantiate ChromeDriver with the specified options
@@ -44,33 +44,38 @@ def authenticate():
 ## EXTRACTING LINKS
 def get_artworks_links_from_page(driver, base_url, page):
     paintings_url = f'{base_url}{page}/'
+    print(paintings_url)
     driver.get(paintings_url)
     
     cards = utils.explicit_wait(driver, '//div[@class="card-image"]/a')
-    return list(set(card.get_attribute('href') for card in cards))
+    links = [card.get_attribute('href') for card in cards]
+    links = [link for link in links if link != None]
+    return links
 
-def get_all_artworks_links(artist_name, links_file_path, links_last_page_file_path):
-    links, last_page_scraped = utils.read_links_and_last_page(links_file_path, links_last_page_file_path)
+def get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_page_file_path):
+    utils.read_links(links_file_path)
+    last_page_scraped = utils.read_last_page(artist_name, links_last_page_file_path)
     
-    base_url = f'https://www.catalogodasartes.com.br/artistas/{artist_name}/?page=' # placeholder
-
-    last_page = 100 # placeholder
+    base_url = f'https://www.catalogodasartes.com.br/cotacao/pinturas/artista/{artist_name}/ordem/inclusao_mais_recente/pagina/{last_page_scraped}/'
+    print(base_url)
 
     driver = authenticate()
 
-    while last_page_scraped <= last_page:
+    while True:
         new_links = get_artworks_links_from_page(driver, base_url, last_page_scraped)
-        links += new_links
-        # Remove duplicates
-        links = list(set(links))
-
-        utils.write_links(links_file_path, links)
-        utils.write_last_page(links_last_page_file_path, artist_name, last_page_scraped)
-        last_page_scraped += 1
+        try: # Go to next page
+            utils.explicit_wait(driver, '//ul[@class="pagination"]/li[not(@class="disabled")][last()]')
+            last_page_scraped += 1
+        except Exception as e: # To be expected at the last page of results
+            logging.exception(e)
+            break
+        finally:
+            utils.write_links(artist_name, new_links, links_file_path)
+            utils.write_last_page(links_last_page_file_path, artist_name, last_page_scraped)
 
     driver.quit()
 
-    return links
+    return new_links
 
 def remove_link_duplicates(links_file_path):
     with open(links_file_path, 'r') as f:

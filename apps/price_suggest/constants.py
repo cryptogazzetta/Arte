@@ -1,8 +1,9 @@
 ## CONNECTION
-db_params = {
+local_db_params = {
     'dbname': 'postgres',
     'user': 'postgres',
-    'password': 'Senha123',
-    'host': 'localhost',
+    'password': 'password',
+    'host': '35.188.120.166',
     'port': '5432',
 }
+
