@@ -3,21 +3,18 @@ from sqlalchemy import text
 import datetime
 import logging
 
-## PARAMS
-# local_db_params = constants.local_db_params
-
 
 # CONNECTION
 def create_connection():
     conn = None
-    try:
-        print('Connecting to the PostgreSQL database...')
-        # conn = psycopg2.connect(**local_db_params)
-        # Using streamlit community cloud instead
-        conn = st.connection("postgresql", type="sql")
+    
+    print('Connecting to the PostgreSQL database...')
+    # conn = psycopg2.connect(**local_db_params)
+    # Using streamlit community cloud instead
+    conn = st.connection("postgresql", type="sql")
 
-    except (Exception) as error:
-        print(error)
+    # except (Exception) as error:
+    #     print(error)
     print("Connection successful")
     return conn
 
