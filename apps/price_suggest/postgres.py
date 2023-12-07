@@ -1,53 +1,49 @@
-import streamlit as st
 from sqlalchemy import text
 import datetime
 import logging
+import psycopg2
+import constants
 
+local_db_params = constants.local_db_params
 
-# CONNECTION
 def create_connection():
-    conn = None
-    
-    print('Connecting to the PostgreSQL database...')
-    # conn = psycopg2.connect(**local_db_params)
-    # Using streamlit community cloud instead
-    conn = st.connection("postgresql", type="sql")
-
-    # except (Exception) as error:
-    #     print(error)
+    connection = None
+    try:
+        print('Connecting to the PostgreSQL database...')
+        connection = psycopg2.connect(**local_db_params)
+        cursor = connection.cursor()
+    except (Exception) as error:
+        print(error)
     print("Connection successful")
-    return conn
+    return connection, cursor
+
 
 def close_connection(connection, cursor):
     cursor.close()
     connection.close()
 
-## PRICE CONSULTATIONS CRUD
-def create_consultation(email, artist, medium_type, height, width, year):
-    try:
-        conn = create_connection()
-        with conn.session as session:
-            timestamp = datetime.datetime.now()
-            insert_query = f"INSERT INTO CONSULTATIONS (email, artist, medium_type, height, width, year, timestamp) VALUES ('{email}', '{artist}', '{medium_type}', {height}, {width}, {year}, '{timestamp}');"
-            session.execute(text(insert_query))
-            session.commit()
-        logging.info('User created')
-    except (Exception) as error:
-        logging.error(error)
 
 def get_all_consultations():
     try:
-        connection = create_connection()
-        users = connection.query('SELECT * FROM CONSULTATIONS;')
+        connection, cursor = create_connection()
+        
+        cursor.execute('SELECT * FROM CONSULTATIONS;')
+        users = cursor.fetchall()
+        
+        close_connection(connection, cursor)
     except (Exception) as error:
         logging.error('error executing get_all_consultations postgres function:', error)
     return users
 
-def get_consultation(email):
+
+def create_consultation(email, artist, medium_type, height, width, year):
     try:
-        connection = create_connection()
-        select_query = f"SELECT * FROM CONSULTATIONS WHERE EMAIL = '{email}';"
-        user = connection.execute(select_query, (email))
-        return user
+        connection, cursor = create_connection()
+        timestamp = datetime.datetime.now()
+        insert_query = f"INSERT INTO CONSULTATIONS (email, artist, medium_type, height, width, year, timestamp) VALUES ('{email}', '{artist}', '{medium_type}', {height}, {width}, {year}, '{timestamp}');"
+        cursor.execute(insert_query)
+        connection.commit()
+        close_connection(connection, cursor)
+        logging.info('User created')
     except (Exception) as error:
-        logging.error('error executing get_user postgres function:', error)
+        logging.error(error)

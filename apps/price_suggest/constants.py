@@ -7,3 +7,9 @@ local_db_params = {
     'port': '5432',
 }
 
+host = "35.188.120.166"
+port = "5432"
+database = "postgres"
+username = "postgres"
+password = "password"
+
