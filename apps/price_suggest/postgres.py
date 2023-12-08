@@ -8,6 +8,7 @@ local_db_params = constants.local_db_params
 
 def create_connection():
     connection = None
+    # cursor = None
     try:
         print('Connecting to the PostgreSQL database...')
         connection = psycopg2.connect(**local_db_params)
@@ -37,13 +38,13 @@ def get_all_consultations():
 
 
 def create_consultation(email, artist, medium_type, height, width, year):
-    try:
-        connection, cursor = create_connection()
-        timestamp = datetime.datetime.now()
-        insert_query = f"INSERT INTO CONSULTATIONS (email, artist, medium_type, height, width, year, timestamp) VALUES ('{email}', '{artist}', '{medium_type}', {height}, {width}, {year}, '{timestamp}');"
-        cursor.execute(insert_query)
-        connection.commit()
-        close_connection(connection, cursor)
-        logging.info('User created')
-    except (Exception) as error:
-        logging.error(error)
+    # try:
+    connection, cursor = create_connection()
+    timestamp = datetime.datetime.now()
+    insert_query = f"INSERT INTO CONSULTATIONS (email, artist, medium_type, height, width, year, timestamp) VALUES ('{email}', '{artist}', '{medium_type}', {height}, {width}, {year}, '{timestamp}');"
+    cursor.execute(insert_query)
+    connection.commit()
+    close_connection(connection, cursor)
+    logging.info('User created')
+    # except (Exception) as error:
+    #     logging.error(error)
