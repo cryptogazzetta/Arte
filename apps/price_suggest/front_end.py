@@ -88,8 +88,8 @@ def get_report(email, artist, medium_type, year, height, width):
         # Show price suggestion if all inputs are filled
         # format price_prediction separating thousands with commas
         price_prediction = f'{price_prediction:,.0f}'
-        st.markdown(f'<p>Preço sugerido: US$ {price_prediction}</p>', unsafe_allow_html=True)
-
+        st.markdown(f'<p>Preço sugerido:</p>', unsafe_allow_html=True)
+        st.markdown(f'<p font-size: 30>US$ {price_prediction}</p>', unsafe_allow_html=True)
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
         st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)

@@ -13,24 +13,24 @@ from extractors import utils
 def authenticate(url, click_to_log=False):
     
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
 
     if click_to_log:
-        login_button = utils.explicit_wait(driver, '//button[@class="Button__Container-sc-1bhxy1c-0 ittcNr"]')
+        login_button = utils.explicit_wait(driver, '//button[@class="Button__Container-sc-1bhxy1c-0 ittcNr"]')[0]
         login_button.click()
 
     # Use Explicit Wait for the email field to be visible and interactable
-    email_field = utils.explicit_wait(driver, '//input[@name="email"]')
+    email_field = utils.explicit_wait(driver, '//input[@name="email"]')[0]
     email_field.send_keys(constants.ARTSY_EMAIL)
 
     # Use Explicit Wait for the password field to be visible and interactable
-    password_field = utils.explicit_wait(driver, '//input[@name="password"]')
+    password_field = utils.explicit_wait(driver, '//input[@name="password"]')[0]
     password_field.send_keys(constants.ARTSY_PASSWORD)
 
     # Use Explicit Wait for the submit button to be clickable
-    submit_button = utils.explicit_wait(driver, '//button[@type="submit"]')
+    submit_button = utils.explicit_wait(driver, '//button[@type="submit"]')[0]
     submit_button.click()
 
     print('Authenticated!')
@@ -81,7 +81,7 @@ def get_artwork_info(driver, link):
     driver.get(link)
     print('got to link:', link)
 
-    artwork_info = pd.Series()
+    artwork_info = {}
     artwork_info['url'] = link
 
     # Dict of info with respective xpath and attribute to be extracted
@@ -97,17 +97,17 @@ def get_artwork_info(driver, link):
     for info_item in info_dict: # Extract info from the artwork page
         try:
             if info_item['attribute'] == 'text':
-                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].text
-                artwork_info[info_item['info']] = artwork_info[info_item['info']].replace('\n', ' ')
+                info = utils.safe_explicit_wait(driver, info_item['xpath'])[0].text
+                artwork_info[info_item['info']] = info.replace('\n', ' ')
             elif info_item['attribute'] == 'src':
-                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].get_attribute('src')
+                artwork_info[info_item['info']] = utils.explicit_wait(driver, info_item['xpath'])[0].get_attribute('src')
             elif info_item['attribute'] == 'href':
-                artwork_info[info_item['info']] = utils.safe_explicit_wait(driver, info_item['xpath'])[0].get_attribute('href')
+                artwork_info[info_item['info']] = utils.explicit_wait(driver, info_item['xpath'])[0].get_attribute('href')
         except Exception as e:
             print(e)
             artwork_info[info_item['info']] = 'got error extracting info: ' + str(e)
     
-    table_rows = utils.safe_explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 giFrDh"]')
+    table_rows = utils.explicit_wait(driver, '//div[@class="Box-sc-15se88d-0 giFrDh"]')
     if table_rows: # Extract info from the info table in artwork page
         for row in table_rows:
             key = row.find_element(By.XPATH, './div[1]').text
@@ -135,7 +135,7 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
 
         if len(new_artworks_info) % batch_size == 0:
             utils.write_artworks_info(artworks_info_file_path, new_artworks_info)
-            new_artworks_info = pd.DataFrame(columns=['url'])
+            new_artworks_info = pd.DataFrame(columns=list(artwork_info.keys()))
 
     if not new_artworks_info.empty:
         utils.write_artworks_info(artworks_info_file_path, new_artworks_info)

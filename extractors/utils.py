@@ -4,6 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import pandas as pd
+from threading import Lock
+
+# Define a global lock
+file_lock = Lock()
 # Project Modules
 
 
@@ -24,18 +28,18 @@ def safe_extract_multiple(driver, xpath):
         print('Error extracting elements with xpath: ' + xpath)
         return None
 
-def explicit_wait(driver, search_key, by='xpath', timeout=10):
+def explicit_wait(driver, search_key, by='xpath', timeout=2):
     if by == 'xpath':    
         return WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.XPATH, search_key))
+            EC.presence_of_all_elements_located((By.XPATH, search_key))
         )
     elif by == 'partial_link_text':
         return WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, search_key))
+            EC.presence_of_all_elements_located((By.PARTIAL_LINK_TEXT, search_key))
         )
     elif by == 'tag_name':
         return WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.TAG_NAME, search_key))
+            EC.presence_of_all_elements_located((By.TAG_NAME, search_key))
         )
 
 def safe_explicit_wait(driver, search_key, by='xpath', timeout=2):
@@ -69,7 +73,7 @@ def safe_explicit_wait(driver, search_key, by='xpath', timeout=2):
 ## INTERACT WITH LINKS (TXT)
 def read_links(links_file_path, artist=None):
     try:
-        links_df = pd.read_csv(links_file_path, names=['url', 'Artist'])
+        links_df = pd.read_csv(links_file_path, names=['url', 'Artist'], header=0)
     except:
         print('No links file found')
         links_df = pd.DataFrame(columns=['url', 'Artist'])
@@ -121,12 +125,23 @@ def read_artworks_info(artworks_info_file_path):
     return artworks_info, existing_links
 
 def write_artworks_info(artworks_info_file_path, new_artworks_info):
-    try:
-        existing_artworks_info = pd.read_csv(artworks_info_file_path)
-    except FileNotFoundError:
-        existing_artworks_info = pd.DataFrame(columns=['url'])
+    with file_lock:
+        try:
+            existing_artworks_info = pd.read_csv(artworks_info_file_path)
+        except FileNotFoundError:
+            # ask for confirmation before creating a new file
+            print('File not found. Create new file?')
+            confirmation = input('Y/N: ')
+            if confirmation == 'Y':
+                existing_artworks_info = pd.DataFrame(columns=['url'])
 
-    new_artworks_info = pd.concat([existing_artworks_info, new_artworks_info], ignore_index=True)
-    new_artworks_info.to_csv(artworks_info_file_path, index=False)
-
-
+        new_artworks_info = pd.concat([existing_artworks_info, new_artworks_info], ignore_index=True)
+        
+        new_artworks_to_add = len(new_artworks_info) - len(existing_artworks_info)
+        print(f'New artworks to add: {new_artworks_to_add}')
+        
+        if new_artworks_to_add > 0: # save as csv only if there are new artworks to add
+            new_artworks_info.to_csv(artworks_info_file_path, index=False)
+            print(f'Done writing {new_artworks_to_add} artworks info to file: {artworks_info_file_path}')
+        else:
+            print('No new artworks info to write')

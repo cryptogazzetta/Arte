@@ -17,7 +17,7 @@ def authenticate():
     login_url = 'https://www.catalogodasartes.com.br/acesso/'
     
     chrome_options = Options()
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.binary_location = '/opt/google/chrome'
 
     # Instantiate ChromeDriver with the specified options
@@ -25,12 +25,12 @@ def authenticate():
     driver.get(login_url)
 
     
-    email_field = utils.explicit_wait(driver, "//input[@id='cliente_email']")
+    email_field = utils.explicit_wait(driver, "//input[@id='cliente_email']")[0]
     email_field.send_keys(email)
-    password_field = utils.explicit_wait(driver, "//input[@id='cliente_senha']")
+    password_field = utils.explicit_wait(driver, "//input[@id='cliente_senha']")[0]
     password_field.send_keys(password)
 
-    enter_button = utils.explicit_wait(driver, "//button[@class='btn botao-invertido-fixo']")
+    enter_button = utils.explicit_wait(driver, "//button[@class='btn botao-invertido-fixo']")[0]
     enter_button.click()
 
     try:
@@ -39,7 +39,6 @@ def authenticate():
         pass
 
     return driver
-
 
 ## EXTRACTING LINKS
 def get_artworks_links_from_page(driver, base_url, page):
@@ -56,16 +55,18 @@ def get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_
     utils.read_links(links_file_path)
     last_page_scraped = utils.read_last_page(artist_name, links_last_page_file_path)
     
-    base_url = f'https://www.catalogodasartes.com.br/cotacao/pinturas/artista/{artist_name}/ordem/inclusao_mais_recente/pagina/{last_page_scraped}/'
-    print(base_url)
+    base_url = f'https://www.catalogodasartes.com.br/cotacao/pinturas/artista/{artist_name}/ordem/inclusao_mais_recente/pagina/'
 
     driver = authenticate()
 
     while True:
         new_links = get_artworks_links_from_page(driver, base_url, last_page_scraped)
         try: # Go to next page
-            utils.explicit_wait(driver, '//ul[@class="pagination"]/li[not(@class="disabled")][last()]')
-            last_page_scraped += 1
+            last_page = utils.explicit_wait(driver, "//div[@class='col s12 m12 l12']/h5")[-1].text.split(' ')[-1]
+            if last_page_scraped == int(last_page):
+                break
+            else:
+                last_page_scraped += 1
         except Exception as e: # To be expected at the last page of results
             logging.exception(e)
             break
@@ -90,16 +91,16 @@ def get_artwork_info(driver, link):
     driver.get(link)
 
     artwork_info = {}
+    
     artwork_info['url'] = link
     # Image URL
     try:
-        artwork_info['img_url'] = utils.explicit_wait(driver, '//img[contains(@class, "produto-imagem")]').get_attribute('src')
+        artwork_info['img_url'] = utils.explicit_wait(driver, '//img[contains(@class, "produto-imagem")]')[0].get_attribute('src')
     except:
-        artwork_info['img_url'] = None
-        
+        artwork_info['img_url'] = None    
     # Table content
     try:
-        table_element = utils.explicit_wait(driver, '//table[@class="produto-tabela"]')
+        table_element = utils.explicit_wait(driver, '//table[@class="produto-tabela"]')[0]
         rows = table_element.find_elements(By.TAG_NAME, 'tr')
         for row in rows:
             cells = row.find_elements(By.TAG_NAME, 'td')
@@ -119,75 +120,41 @@ def get_artwork_info(driver, link):
     return artwork_info
 
 def get_all_artworks_info(links_file_path, artworks_info_file_path):
-    artworks_links = utils.read_artworks_links_file(links_file_path)
-    
-    if not artworks_links:
-        print('No new artworks to extract')
-        return
-    else:
-        pass
+    artworks_links = utils.read_links(links_file_path)
 
-    artworks_info = pd.read_csv(artworks_info_file_path) 
-    existing_links = artworks_info['url'].tolist()
-    artworks_links = [link for link in artworks_links if link not in existing_links]
+    artworks_info, existing_links = utils.read_artworks_info(artworks_info_file_path)
+    artworks_links = list(set(artworks_links) - set(existing_links))
+
+    new_artworks_info = pd.DataFrame(columns=artworks_info.columns)
+    batch_size = 5
+    error_tolerance = 2
 
     driver = authenticate()
 
-    new_artworks_info = []
-    batch_size = 10
-
     try:
         for artwork_link in artworks_links:
+            print(f'going for link: {artwork_link}')
             artwork_info = get_artwork_info(driver, artwork_link)
-            new_artworks_info.append(artwork_info)
+            artwork_info = pd.DataFrame([artwork_info])
 
-            if len(new_artworks_info) % batch_size == 0:
-                artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)])
-                artworks_info.to_csv(artworks_info_file_path)
+            new_artworks_info = pd.concat([new_artworks_info, artwork_info], ignore_index=True)
 
-                # if there are at least 2 artworks with value other than False in 'Error', break the loop
-                if len([new_artwork_info for new_artwork_info in new_artworks_info if new_artwork_info['Error'] != False]) >= 3:
+            if len(new_artworks_info) % batch_size == 0: # At batch size, write to file
+                
+                new_artworks_info = new_artworks_info[new_artworks_info['Error'] == False] # Remove errors
+                utils.write_artworks_info(artworks_info_file_path, new_artworks_info)
+
+                if (batch_size - len(new_artworks_info)) >= error_tolerance: # Check if error_count >= error_tolerance
                     break
 
-                new_artworks_info = []
+                new_artworks_info = pd.DataFrame(columns=list(artwork_info.keys())) # Reset new_artworks_info
 
-        if new_artworks_info:
-            artworks_info = pd.concat([artworks_info, pd.DataFrame(new_artworks_info)])
-            artworks_info.to_csv(artworks_info_file_path)
+        if not new_artworks_info.empty: # Write remaining artworks
+            utils.write_artworks_info(artworks_info_file_path, new_artworks_info)
+
     except Exception as e:
         print(e)
-        pass
-
-    driver.quit()
-
-    remove_info_duplicates(artworks_info_file_path)
+    finally:
+        driver.quit()
 
     return artworks_info
-
-def remove_info_duplicates(artworks_info_file_path):
-    artworks_info = pd.read_csv(artworks_info_file_path)
-    artworks_info = artworks_info.sort_values(by=['Error'])
-    artworks_info = artworks_info.drop_duplicates(subset=['url'], keep='last')
-    artworks_info.to_csv(artworks_info_file_path, index=False)
-
-
-## DEALING WITH FAILED EXTRACTIONS
-def get_failed_artworks_links(artworks_info_file_path):
-    artworks_info = csv_handle.csv_to_dict_list(artworks_info_file_path)
-    
-    failed_artworks_links = [artwork_info['url'] for artwork_info in artworks_info if artwork_info['Error'] != 'False']
-    return failed_artworks_links
-
-def get_failed_artworks_info(artworks_info_file_path, failed_artworks_links_file_path):
-
-    failed_artworks_links = get_failed_artworks_links(artworks_info_file_path)
-    print('Failed artworks links:' + str(len(failed_artworks_links)))
-
-    with open(failed_artworks_links_file_path, 'w') as f:
-        f.writelines([link + '\n' for link in failed_artworks_links])
-
-    print(f'Failed artworks links saved to {failed_artworks_links_file_path}')
-    
-    artworks_info = get_all_artworks_info(failed_artworks_links_file_path, artworks_info_file_path)
-
-    remove_info_duplicates(artworks_info_file_path)

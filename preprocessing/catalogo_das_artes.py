@@ -10,7 +10,7 @@ def preprocess(raw_info_path, clean_info_path):
     lots = fix_technique(lots)
     lots = define_sold(lots)
     lots = define_year_of_sale(lots)
-    lots = lots.drop(columns=['Dimensão', 'Avaliação', 'Data da Pesquisa'])
+    lots = lots.drop(columns=['Dimensão', 'Avaliação', 'Data da Pesquisa', 'Século', 'Década'])
     lots = drop_rows(lots)
 
     lots.to_csv(clean_info_path, index=False)
@@ -42,11 +42,11 @@ def fix_price(lots):
     return lots
 
 def map_technique(technique):
-    technique_fix = {'pintura': ['pintad', 'pintura', 'óleo', 'vinil', 'acrílic', 'aquarela', 'guache', 'pastel', 'tinta', 'têmpera'],
+    medium_type_dict = {'pintura': ['pintad', 'pintura', 'óleo', 'vinil', 'acrílic', 'aquarela', 'guache', 'pastel', 'tinta', 'têmpera'],
                     'desenho': ['desenho', 'caneta', 'lápis', 'lapis', 'carvao', 'carvão', 'grafite', 'nanquim', 'giz'],
                     'reprodução': ['fine art', 'impressão gráfica', 'reprodução gráfica', 'reprodução', 'giclée', 'giclê', 'gliccée', 'glicée', 'serifrafia', 'litografia', 'litogravura', 'lito offset', 'xilogravura', 'gravura', 'gravu', 'serigrafia', 'xilogravura', 'print', 'agua-forte', 'água-forte']}
        
-    for key, values in technique_fix.items():
+    for key, values in medium_type_dict.items():
         for value in values:
             if value.lower() in technique.lower():
                 return key
@@ -55,7 +55,7 @@ def map_technique(technique):
 def fix_technique(lots):
 
     lots['Technique'] = lots['Technique'].astype(str)
-    lots['Technique_fix'] = lots['Technique'].apply(map_technique)
+    lots['Medium_type'] = lots['Technique'].apply(map_technique)
 
     return lots
 
