@@ -130,7 +130,7 @@ def write_last_page(last_page_file_path, artist_name, last_page):
 ## INTERACT WITH ARTWORKS INFO (CSV)
 def read_artworks_info(artworks_info_file_path):
     try:
-        artworks_info = pd.read_csv(artworks_info_file_path)
+        artworks_info = pd.read_csv(artworks_info_file_path, error_bad_lines=False)
         existing_links = artworks_info['url'].tolist()
     except:
         artworks_info = pd.DataFrame(columns=['url'], index=[0])
@@ -146,7 +146,7 @@ def write_artworks_info(artworks_info_file_path, new_artworks_info, lock_path):
     lock(lock_path)
 
     try: # try to read existing file
-        existing_artworks_info = pd.read_csv(artworks_info_file_path)
+        existing_artworks_info = pd.read_csv(artworks_info_file_path, on_bad_lines='warn')
     except FileNotFoundError:
         # ask for confirmation before creating a new file
         print('File not found. Create new file?')

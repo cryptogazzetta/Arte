@@ -90,8 +90,8 @@ def get_report(email, artist, medium_type, year, height, width):
         st.markdown(f'<p font-size: 30>US$ {price_prediction:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
 
         # SHOW PRICE RANGE
-        st.markdown(f'<p>Intervalo de confiança (95%):</p>', unsafe_allow_html=True)
-        st.markdown(f'<p font-size: 30>US$ {price_range}</p>', unsafe_allow_html=True)
+        # st.markdown(f'<p>Intervalo de confiança (95%):</p>', unsafe_allow_html=True)
+        # st.markdown(f'<p font-size: 30>US$ {price_range}</p>', unsafe_allow_html=True)
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
         st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
@@ -100,7 +100,7 @@ def get_report(email, artist, medium_type, year, height, width):
         st.pyplot(fig)
 
         # TABLE OF SIMILAR ARTWORKS AUCTIONED
-        st.dataframe(similar_lots[['Medium', 'Height (cm)', 'Width (cm)', 'Price (USD)', 'url']], width=1000)
+        st.dataframe(similar_lots[['Medium', 'Height (cm)', 'Width (cm)', 'Price (BRL)', 'url']], width=1000)
 
 def check_email(email):
     if not ('@' in email and '.' in email):

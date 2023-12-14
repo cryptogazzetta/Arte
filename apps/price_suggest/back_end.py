@@ -10,13 +10,13 @@ import github
 from sklearn import metrics
 
 # Import files from github
-lots = pd.read_csv(github.get_file_from_github('clean-files/artsy_auctions_artworks_info.csv'))
-lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))
-pricing_model = joblib.load(github.get_file_from_github('analysis/models/artsy_auctions_rf_model.pkl', format='pkl'))
+lots = pd.read_csv(github.get_file_from_github('clean-files/catalogo_artworks_info.csv'))
+lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/catalogo_X_test.csv'))
+pricing_model = joblib.load(github.get_file_from_github('analysis/models/catalogo_gb_model.pkl', format='pkl'))
 
 # provide lists of artists and Medium_types
-artists_list = ['Marc Chagall', 'Victor Vasarely']
-medium_types_list = ['Painting', 'Drawing', 'Print']
+artists_list = lots['Artist'].unique().tolist()
+medium_types_list = ['pintura', 'desenho', 'reprodução']
 
 def get_input_dummies(characteristics):
     input_dummies = pd.DataFrame(columns=lots_x_test.columns)
@@ -72,10 +72,10 @@ def get_similar_lots(characteristics):
 def get_similar_lots_performance(similar_lots):
 
     similar_lots_performance = similar_lots.groupby('Year of sale').agg(
-        Total_Sales=('Price (USD)', 'sum'),
-        Mean_Price=('Price (USD)', 'mean'),
-        Sales_Count=('Price (USD)', 'count'),
-        Price_m=('Price (USD / cm)', 'mean')
+        Total_Sales=('Price (BRL)', 'sum'),
+        Mean_Price=('Price (BRL)', 'mean'),
+        Sales_Count=('Price (BRL)', 'count'),
+        # Price_m=('Price (BRL / cm)', 'mean')
     ).reset_index()
 
     return similar_lots_performance
