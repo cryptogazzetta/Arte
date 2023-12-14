@@ -5,6 +5,10 @@ import pandas as pd
 import postgres
 import github
 
+
+# import standard deviation
+from sklearn import metrics
+
 # Import files from github
 lots = pd.read_csv(github.get_file_from_github('clean-files/artsy_auctions_artworks_info.csv'))
 lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/artsy_auctions_X_test.csv'))

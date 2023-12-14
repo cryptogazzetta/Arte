@@ -5,7 +5,6 @@ from selenium.webdriver.chrome.options import Options
 import pandas as pd
 import logging
 # Project Modules
-from utils import csv_handle
 from extractors import utils
 
 
@@ -142,10 +141,10 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
             if len(new_artworks_info) % batch_size == 0: # At batch size, write to file
                 
                 new_artworks_info = new_artworks_info[new_artworks_info['Error'] == False] # Remove errors
-                utils.write_artworks_info(artworks_info_file_path, new_artworks_info)
+                utils.write_artworks_info(artworks_info_file_path, new_artworks_info, lock_path="./temporary-files/lock.txt")
 
                 if (batch_size - len(new_artworks_info)) >= error_tolerance: # Check if error_count >= error_tolerance
-                    break
+                    continue
 
                 new_artworks_info = pd.DataFrame(columns=list(artwork_info.keys())) # Reset new_artworks_info
 

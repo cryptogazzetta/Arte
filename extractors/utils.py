@@ -4,12 +4,26 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import pandas as pd
-from threading import Lock
+import time
 
-# Define a global lock
-file_lock = Lock()
-# Project Modules
 
+## LOCK FILE
+def is_locked(lock_path):
+    with open(lock_path, 'r') as lock_file:
+        if lock_file.read() == 'locked':
+            return True
+        else:
+            return False
+        
+def lock(lock_path):
+    lock_file = open(lock_path, 'w')
+    lock_file.write('locked')
+    lock_file.close()
+
+def unlock(lock_path):
+    lock_file = open(lock_path, 'w')
+    lock_file.write('unlocked')
+    lock_file.close()
 
 ## Utils
 def safe_extract(driver, xpath):
@@ -124,24 +138,31 @@ def read_artworks_info(artworks_info_file_path):
     
     return artworks_info, existing_links
 
-def write_artworks_info(artworks_info_file_path, new_artworks_info):
-    with file_lock:
-        try:
-            existing_artworks_info = pd.read_csv(artworks_info_file_path)
-        except FileNotFoundError:
-            # ask for confirmation before creating a new file
-            print('File not found. Create new file?')
-            confirmation = input('Y/N: ')
-            if confirmation == 'Y':
-                existing_artworks_info = pd.DataFrame(columns=['url'])
+def write_artworks_info(artworks_info_file_path, new_artworks_info, lock_path):
+    while is_locked(lock_path):
+        time.sleep(1)
+        print('Waiting for lock to be released')
 
-        new_artworks_info = pd.concat([existing_artworks_info, new_artworks_info], ignore_index=True)
-        
-        new_artworks_to_add = len(new_artworks_info) - len(existing_artworks_info)
-        print(f'New artworks to add: {new_artworks_to_add}')
-        
-        if new_artworks_to_add > 0: # save as csv only if there are new artworks to add
-            new_artworks_info.to_csv(artworks_info_file_path, index=False)
-            print(f'Done writing {new_artworks_to_add} artworks info to file: {artworks_info_file_path}')
-        else:
-            print('No new artworks info to write')
+    lock(lock_path)
+
+    try: # try to read existing file
+        existing_artworks_info = pd.read_csv(artworks_info_file_path)
+    except FileNotFoundError:
+        # ask for confirmation before creating a new file
+        print('File not found. Create new file?')
+        confirmation = input('Y/N: ')
+        if confirmation == 'Y':
+            existing_artworks_info = pd.DataFrame(columns=['url'])
+
+    new_artworks_info = pd.concat([existing_artworks_info, new_artworks_info], ignore_index=True)
+    
+    new_artworks_to_add = len(new_artworks_info) - len(existing_artworks_info)
+    print(f'New artworks to add: {new_artworks_to_add}')
+    
+    if new_artworks_to_add > 0: # save as csv only if there are new artworks to add
+        new_artworks_info.to_csv(artworks_info_file_path, index=False)
+        print(f'Done writing {new_artworks_to_add} artworks info to file: {artworks_info_file_path}')
+    else:
+        print('No new artworks info to write')
+
+    unlock(lock_path)

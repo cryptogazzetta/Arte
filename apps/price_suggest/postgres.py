@@ -1,14 +1,14 @@
-from sqlalchemy import text
 import datetime
 import logging
 import psycopg2
 import constants
 
+## CONNECTION
 local_db_params = constants.local_db_params
 
 def create_connection():
     connection = None
-    # cursor = None
+    cursor = None
     try:
         print('Connecting to the PostgreSQL database...')
         connection = psycopg2.connect(**local_db_params)
@@ -18,12 +18,11 @@ def create_connection():
     print("Connection successful")
     return connection, cursor
 
-
 def close_connection(connection, cursor):
     cursor.close()
     connection.close()
 
-
+## POSTGRES FUNCTIONS
 def get_all_consultations():
     try:
         connection, cursor = create_connection()
@@ -35,7 +34,6 @@ def get_all_consultations():
     except (Exception) as error:
         logging.error('error executing get_all_consultations postgres function:', error)
     return users
-
 
 def create_consultation(email, artist, medium_type, height, width, year):
     # try:

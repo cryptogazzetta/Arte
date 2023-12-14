@@ -86,10 +86,12 @@ def get_report(email, artist, medium_type, year, height, width):
     else:
         st.markdown(f'<p>{similar_lots.shape[0]} obras similares foram encontradas no histórico.</p>', unsafe_allow_html=True)
         # Show price suggestion if all inputs are filled
-        # format price_prediction separating thousands with commas
-        price_prediction = f'{price_prediction:,.0f}'
         st.markdown(f'<p>Preço sugerido:</p>', unsafe_allow_html=True)
-        st.markdown(f'<p font-size: 30>US$ {price_prediction}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p font-size: 30>US$ {price_prediction:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
+
+        # SHOW PRICE RANGE
+        st.markdown(f'<p>Intervalo de confiança (95%):</p>', unsafe_allow_html=True)
+        st.markdown(f'<p font-size: 30>US$ {price_range}</p>', unsafe_allow_html=True)
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
         st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
