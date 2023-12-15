@@ -6,11 +6,12 @@ def preprocess(raw_info_path, clean_info_path):
     lots = rename_columns(lots)
     lots = fix_artist(lots)
     lots = fix_dimensions(lots)
+    lots = define_area(lots)
     lots = fix_price(lots)
     lots = fix_medium(lots)
     lots = define_sold(lots)
     lots = define_year_of_sale(lots)
-    lots = lots.drop(columns=['Dimensão', 'Avaliação', 'Data da Pesquisa', 'Século', 'Década'])
+    lots = lots.drop(columns=['Dimensão', 'Avaliação'])
     lots = drop_rows(lots)
     lots.to_csv(clean_info_path, index=False)
 
@@ -34,6 +35,10 @@ def fix_dimensions(lots):
     lots['Height (cm)'] = lots['Height (cm)'].str.replace(' cm', '').str.replace(',', '.').astype(float)
     lots['Width (cm)'] = lots['Dimensão'].str.extract(r'x (.*) cm')
     lots['Width (cm)'] = lots['Width (cm)'].str.replace(' cm', '').str.replace(',', '.').astype(float)
+    return lots
+
+def define_area(lots):
+    lots['Area (cm²)'] = lots['Height (cm)'] * lots['Width (cm)']
     return lots
 
 def fix_price(lots):

@@ -12,11 +12,11 @@ from sklearn import metrics
 # Import files from github
 lots = pd.read_csv(github.get_file_from_github('clean-files/catalogo_artworks_info.csv'))
 lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/catalogo_X_test.csv'))
-pricing_model = joblib.load(github.get_file_from_github('analysis/models/catalogo_gb_model.pkl', format='pkl'))
+pricing_model = joblib.load(github.get_file_from_github('analysis/models/catalogo_rf_model.pkl', format='pkl'))
 
 # provide lists of artists and Medium_types
 artists_list = lots['Artist'].unique().tolist()
-medium_types_list = ['pintura', 'desenho', 'reprodução']
+medium_types_list = ['pintura']
 
 def get_input_dummies(characteristics):
     input_dummies = pd.DataFrame(columns=lots_x_test.columns)
@@ -29,10 +29,10 @@ def get_input_dummies(characteristics):
     if 'Medium_type_'+characteristics['Medium_type'] in lots.columns:
         input_dummies.loc[0, characteristics['Medium_type']] = True
     
-    if characteristics['Year'] != '':
-        input_dummies.loc[0, 'Year'] = characteristics['Year']
-    # By default, year of sale is 2023
-    input_dummies.loc[0, 'Year of sale'] = 2023
+    # if characteristics['Year'] != '':
+    #     input_dummies.loc[0, 'Year'] = characteristics['Year']
+    # By default, year of sale is 2024
+    input_dummies.loc[0, 'Year of sale'] = 2024
     # Fill NaNs with False
     input_dummies.fillna(False, inplace=True)
     
