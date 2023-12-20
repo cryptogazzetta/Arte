@@ -12,7 +12,7 @@ from sklearn import metrics
 # Import files from github
 lots = pd.read_csv(github.get_file_from_github('clean-files/catalogo_artworks_info.csv'))
 lots_x_test = pd.read_csv(github.get_file_from_github('analysis/models/catalogo_X_test.csv'))
-pricing_model = joblib.load(github.get_file_from_github('analysis/models/catalogo_rf_model.pkl', format='pkl'))
+pricing_model = joblib.load(github.get_file_from_github('analysis/models/catalogo_xgb_model.pkl', format='pkl'))
 
 # provide lists of artists and Medium_types
 artists_list = lots['Artist'].unique().tolist()
@@ -42,6 +42,15 @@ def get_price_prediction(characteristics):
     input_df = get_input_dummies(characteristics)
     price_prediction = pricing_model.predict(input_df.to_numpy())[0]
     return price_prediction
+
+def get_price_range(price_prediction, similar_lots):
+    # remove outliers: lots with price in the top 5%
+    similar_lots = similar_lots[similar_lots['Price (BRL)'] <= similar_lots['Price (BRL)'].quantile(0.5)]
+    # Get standard deviation
+    std = similar_lots['Price (BRL)'].std()
+    # Get price range
+    price_range = [price_prediction-std, price_prediction+std]
+    return price_range
 
 def get_similar_lots(characteristics):
     similar_lots = lots.copy()

@@ -90,8 +90,9 @@ def get_report(email, artist, medium_type, year, height, width):
         st.markdown(f'<p font-size: 30>US$ {price_prediction:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
 
         # SHOW PRICE RANGE
-        # st.markdown(f'<p>Intervalo de confiança (95%):</p>', unsafe_allow_html=True)
-        # st.markdown(f'<p font-size: 30>US$ {price_range}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p>Intervalo de preço:</p>', unsafe_allow_html=True)
+        price_range = back_end.get_price_range(price_prediction, similar_lots)
+        st.markdown(f'<p font-size: 30>US$ {price_range[0]:,.0f} - US$ {price_range[1]:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
         st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
