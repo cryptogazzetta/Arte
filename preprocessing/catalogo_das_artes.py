@@ -8,6 +8,7 @@ def preprocess(raw_info_path, clean_info_path):
     lots = fix_dimensions(lots)
     lots = define_area(lots)
     lots = fix_price(lots)
+    lots = define_price_per_area(lots)
     lots = fix_medium(lots)
     lots = define_sold(lots)
     lots = define_year_of_sale(lots)
@@ -46,6 +47,10 @@ def fix_price(lots):
     lots['Price (BRL)'] = lots['Price (BRL)'].str.replace('.', '').str.replace(',', '').astype(float) / 100
     lots['Price (USD)'] = lots['Avaliação'].str.extract(r'USD (.*)$')
     lots['Price (USD)'] = lots['Price (USD)'].str.replace('.', '').str.replace(',', '').astype(float) / 100
+    return lots
+
+def define_price_per_area(lots):
+    lots['Price (BRL/cm²)'] = lots['Price (BRL)'] / lots['Area (cm²)']
     return lots
 
 def map_medium(medium):
