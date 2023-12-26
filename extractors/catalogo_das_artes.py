@@ -52,7 +52,7 @@ def get_artworks_links_from_page(driver, base_url, page):
 
 def get_all_artworks_links_from_artist(artist_name, links_file_path, links_last_page_file_path):
     utils.read_links(links_file_path)
-    last_page_scraped = utils.read_last_page(artist_name, links_last_page_file_path)
+    last_page_scraped = int(utils.read_last_page(artist_name, links_last_page_file_path))
     
     base_url = f'https://www.catalogodasartes.com.br/cotacao/pinturas/artista/{artist_name}/ordem/inclusao_mais_recente/pagina/'
 
@@ -116,6 +116,9 @@ def get_artwork_info(driver, link):
         print(e)
         pass
     
+    if 'Somente para Assinantes' in artwork_info['Avaliação']:
+        return 'Failed'
+
     return artwork_info
 
 def get_all_artworks_info(links_file_path, artworks_info_file_path):
@@ -134,6 +137,10 @@ def get_all_artworks_info(links_file_path, artworks_info_file_path):
         for artwork_link in artworks_links:
             print(f'going for link: {artwork_link}')
             artwork_info = get_artwork_info(driver, artwork_link)
+            if artwork_info == 'Failed':
+                print("Failed to retrieve artwork info. Stopping execution.")
+                break
+
             artwork_info = pd.DataFrame([artwork_info])
 
             new_artworks_info = pd.concat([new_artworks_info, artwork_info], ignore_index=True)

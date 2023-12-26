@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # SKLEARN
 from sklearn.model_selection import train_test_split
 # Metrics
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, mean_absolute_percentage_error
 # Models
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
@@ -17,9 +17,9 @@ warnings.filterwarnings('ignore')
 
 ## DATA PREPARATION
 def get_df_to_model(lots):
-    lots_to_model = lots[['Artist', 'Width (cm)', 'Height (cm)', 'Year of sale', 'Price (BRL)', 'Medium_type']]#, 'Year']]
-    lots_to_model.dropna(subset=['Artist', 'Width (cm)', 'Height (cm)', 'Year of sale', 'Price (BRL)', 'Medium_type'], inplace=True)
-    # lots_to_model.fillna(value=1970, inplace=True) # fill NaN year with 1970
+    lots_to_model = lots.copy()
+    lots_to_model.dropna(inplace=True)
+    
 
     print('shape of lots_to_model (before split):', str(lots_to_model.shape))
 
@@ -58,7 +58,7 @@ def fit_models(X_train, y_train, X_test, y_test):
               'Gradient Boosting': GradientBoostingRegressor()}
 
     models_df = pd.DataFrame(columns=['Linear Regression', 'Decision Tree', 'Random Forest', 'Gradient Boosting'],
-                             index=['R2', 'RMSE', 'MAE'])
+                             index=['R2', 'RMSE', 'MAE', 'MAPE'])
 
     for name, model in models.items():
         model.fit(X_train, y_train)
@@ -66,8 +66,9 @@ def fit_models(X_train, y_train, X_test, y_test):
         r2 = r2_score(y_test, pred)
         rmse = np.sqrt(mean_squared_error(y_test, pred))
         mae = mean_absolute_error(y_test, pred)
+        mape = mean_absolute_percentage_error(y_test, pred)
         
-        models_df[name] = [r2, rmse, mae]
+        models_df[name] = [r2, rmse, mae, mape]
 
     return models_df, models # returns df with models performance and models dict
 
