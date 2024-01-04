@@ -36,6 +36,8 @@ def get_input_dummies(characteristics):
     # Fill NaNs with False
     input_dummies.fillna(False, inplace=True)
     
+    print(input_dummies.columns)
+
     return input_dummies
 
 def get_price_prediction(characteristics):
@@ -98,5 +100,5 @@ def save_lead(email, characteristics):
         year = characteristics['Year']
     else:
         year = 'NULL'
-    postgres.create_consultation(email, artist, medium_type, height, width, year)
+    # postgres.create_consultation(email, artist, medium_type, height, width, year)
     
