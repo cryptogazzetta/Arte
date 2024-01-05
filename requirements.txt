@@ -166,3 +166,4 @@ yarg==0.1.9
 yarl==1.9.2
 zipp==3.16.2
 xgboost==2.0.2
+st-gsheets-connection==0.0.3

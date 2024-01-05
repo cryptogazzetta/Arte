@@ -10,20 +10,27 @@ def main():
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
-    css = github.get_file_from_github('apps/price_suggest/styles.css', format='css')
-
+    ## CSS FILE
+    if 'css' not in st.session_state:
+        st.session_state['css'] = github.get_file_from_github('apps/price_suggest/styles.css', format='css')
+    css = st.session_state['css']
     st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
     ## PAGE TITLE
     st.markdown('<h>Marte</h>', unsafe_allow_html=True)
     st.markdown(
-        '<p>Criamos essa ferramenta para ajudar a precificar obras de arte com base no histórico de vendas em leilão. Fique à vontade para experimentar a ferramenta, compartilhar e propor sugestões ;) </p>',
+        '<p>Esta ferramenta ajuda a precificar obras de arte com base no histórico de vendas semelhantes em leilão. Fique à vontade para experimentar a ferramenta, compartilhar e propor sugestões! </p>',
         unsafe_allow_html=True
     )
 
     ## Lists of artists and Medium_types
-    artists_list = back_end.artists_list
-    medium_types_list = back_end.medium_types_list
+    if 'artists_list' not in st.session_state:
+        st.session_state['artists_list'] = back_end.artists_list
+    if 'medium_types_list' not in st.session_state:
+        st.session_state['medium_types_list'] = back_end.medium_types_list
+
+    artists_list = st.session_state['artists_list']
+    medium_types_list = st.session_state['medium_types_list']
 
     #### USER INPUT
     email, artist, medium_type, year, height, width = get_user_input(artists_list, medium_types_list)
@@ -79,23 +86,47 @@ def get_report(email, artist, medium_type, year, height, width):
 
 
     # SHOW PRICE SUGGESTION    
-    st.markdown(f'<h1>{medium_type.capitalize()} por {artist}, {height}x{width}</h1>', unsafe_allow_html=True)
+    st.markdown(f'<h1>{medium_type.capitalize()} por {artist} ({height}x{width})</h1>', unsafe_allow_html=True)
     no_similar_lots = check_similar_lots(similar_lots)
     if no_similar_lots:
         st.markdown(f'<p>Não encontramos obras similares no histórico de leilões.</p>', unsafe_allow_html=True)
     else:
         st.markdown(f'<p>{similar_lots.shape[0]} obras similares foram encontradas no histórico.</p>', unsafe_allow_html=True)
-        # Show price suggestion if all inputs are filled
-        st.markdown(f'<p>Preço sugerido:</p>', unsafe_allow_html=True)
-        st.markdown(f'<p font-size: 30>US$ {price_prediction:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
 
         # SHOW PRICE RANGE
-        st.markdown(f'<p>Intervalo de preço:</p>', unsafe_allow_html=True)
         price_range = back_end.get_price_range(price_prediction, similar_lots)
-        st.markdown(f'<p font-size: 30>US$ {price_range[0]:,.0f} - US$ {price_range[1]:,.0f}</p>', unsafe_allow_html=True) # formatting to separate thousands with comma
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown(
+                f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
+                f'    <p style="margin: 0;">Preço mínimo</p>'
+                f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[0]:,.0f}</p>'  # formatting to separate thousands with comma
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        with col2:
+            st.markdown(
+                f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
+                f'    <p style="margin: 0; color: white;">Preço sugerido</p>'
+                f'    <p style="font-size: 24px; margin-bottom: 5px; color: white;">R$ {price_prediction:,.0f}</p>'  # formatting to separate thousands with comma
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        with col3:
+            st.markdown(
+                f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
+                f'    <p style="margin: 0;">Preço máximo</p>'
+                f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[1]:,.0f}</p>'  # formatting to separate thousands with comma
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        st.empty
 
         # PLOT MARKET PERFORMANCE OF SIMILAR ARTWORKS
-        st.markdown('<h2>Performance of similar artworks at auction</h2>', unsafe_allow_html=True)
+        st.markdown('<h2>Performance em leilão de obras semelhantes</h2>', unsafe_allow_html=True)
 
         fig = chart.get_similar_lots_performance_chart(similar_lots_performance)
         st.pyplot(fig)

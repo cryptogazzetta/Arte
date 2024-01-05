@@ -15,6 +15,8 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 warnings.filterwarnings('ignore')
 
 
+## WHY IS DF_TO_MODEL NOT GETTING ANY 'desenho'???
+
 ## DATA PREPARATION
 def get_df_to_model(lots):
     lots_to_model = lots.copy()
