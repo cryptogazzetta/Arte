@@ -96,14 +96,14 @@ def get_report(email, artist, medium_type, year, height, width):
         # SHOW PRICE RANGE
         price_range = back_end.get_price_range(price_prediction, similar_lots)
         col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown(
-                f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
-                f'    <p style="margin: 0;">Preço mínimo</p>'
-                f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[0]:,.0f}</p>'  # formatting to separate thousands with comma
-                f'</div>',
-                unsafe_allow_html=True
-            )
+        # with col1:
+        #     st.markdown(
+        #         f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
+#                 f'    <p style="margin: 0;">Preço mínimo</p>'
+  #               f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[0]:,.0f}</p>'  # formatting to separate thousands with comma
+    #             f'</div>',
+      #           unsafe_allow_html=True
+        #     )
 
         with col2:
             st.markdown(
@@ -114,14 +114,14 @@ def get_report(email, artist, medium_type, year, height, width):
                 unsafe_allow_html=True
             )
 
-        with col3:
-            st.markdown(
-                f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
-                f'    <p style="margin: 0;">Preço máximo</p>'
-                f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[1]:,.0f}</p>'  # formatting to separate thousands with comma
-                f'</div>',
-                unsafe_allow_html=True
-            )
+#         with col3:
+  #           st.markdown(
+    #             f'<div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">'
+      #           f'    <p style="margin: 0;">Preço máximo</p>'
+        #         f'    <p style="font-size: 16px; margin-bottom: 5px;">R$ {price_range[1]:,.0f}</p>'  # formatting to separate thousands with comma
+          #       f'</div>',
+            #     unsafe_allow_html=True
+            # )
 
         st.empty
 
